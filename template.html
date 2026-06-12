@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ValOS Explorer — Validator Operations Standard</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Host+Grotesk:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f4f4; --surface:#ffffff; --surface2:#fafafa;
+  --ink:#000000; --ink2:#555555; --ink3:#999999;
+  --line:#000000; --line2:#e0e0e0;
+  --accent:#fc5f2b; --accent-ink:#e04e1e; --accent-soft:rgba(252,95,43,0.09);
+  --pass:#059669; --partial:#d97706; --fail:#dc2626; --na:#999999;
+  --c-FIN:#d97706; --c-SLS:#dc2626; --c-DOW:#7c3aed; --c-KEC:#0891b2;
+  --c-HCK:#ea580c; --c-GIR:#059669; --c-SPS:#db2777; --c-RER:#4f46e5;
+  --t-FIN:rgba(217,119,6,0.10); --t-SLS:rgba(220,38,38,0.10); --t-DOW:rgba(124,58,237,0.10); --t-KEC:rgba(8,145,178,0.10);
+  --t-HCK:rgba(234,88,12,0.10); --t-GIR:rgba(5,150,105,0.10); --t-SPS:rgba(219,39,119,0.10); --t-RER:rgba(79,70,229,0.10);
+  --mono:'DM Mono','Courier New',monospace;
+  --disp:'Host Grotesk',Arial,'Helvetica Neue',Helvetica,sans-serif;
+  --body:'Host Grotesk',Arial,'Helvetica Neue',Helvetica,sans-serif;
+  --rad:0px; --rad-s:0px;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-ink);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:var(--body)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,.mono{font-family:var(--mono)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;background:#ffffff;border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px;height:58px}
+.brand{display:flex;align-items:baseline;gap:9px;font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.01em;color:var(--ink);white-space:nowrap}
+.brand .tag{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+nav.tabs{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{padding:7px 13px;border-radius:8px;color:var(--ink2);font-weight:500;font-size:14px;white-space:nowrap}
+nav.tabs a:hover{background:var(--surface2);text-decoration:none}
+nav.tabs a.on{background:var(--ink);color:#fff}
+.wrap{max-width:1240px;margin:0 auto;padding:26px 20px 90px}
+
+/* ---------- generic ---------- */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+h1.disp{font-family:var(--disp);font-size:clamp(28px,4.5vw,44px);line-height:1.08;margin:10px 0 14px;font-weight:700;letter-spacing:-.015em}
+h2.sec{font-family:var(--disp);font-size:22px;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+.lede{font-size:16.5px;color:var(--ink2);max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--ink2);white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;font-weight:600;padding:2.5px 8px;border-radius:6px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.chip:hover{text-decoration:none;filter:brightness(.96)}
+.chip .dot{width:7px;height:7px;border-radius:2px;flex:none}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:13.5px;padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{background:var(--surface2);text-decoration:none}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:#222}
+.btn.small{padding:5px 10px;font-size:12.5px}
+.muted{color:var(--ink3)}
+.small{font-size:13px}
+.backlink{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:13.5px;margin-bottom:14px}
+.grid{display:grid;gap:14px}
+.kbd-hint{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.ticks{display:inline-flex;gap:2px;align-items:center}
+.ticks i{width:4px;height:11px;border-radius:1.5px;background:var(--line);display:block}
+.ticks i.m{background:var(--accent)}
+.ticks i.c{background:var(--c-SPS)}
+
+/* ---------- overview ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:36px;align-items:start;margin-top:14px}
+.statline{display:flex;flex-wrap:wrap;gap:10px 26px;margin:22px 0 6px}
+.statline .st{display:flex;flex-direction:column}
+.statline .n{font-family:var(--disp);font-weight:700;font-size:27px;line-height:1.1}
+.statline .l{font-size:12px;color:var(--ink3);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.fabric-card{padding:18px 18px 14px}
+.fabric-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
+.fabric{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:5px}
+.fcell{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:6px 4px 5px;border-radius:5px;border:1px solid var(--line2);text-align:center;cursor:pointer;color:var(--ink2);background:var(--surface2);position:relative;transition:transform .08s ease}
+.fcell:hover{transform:translateY(-1px);text-decoration:none}
+.fcell::before{content:"";display:block;height:3px;border-radius:2px;margin:0 4px 4px;background:var(--cc)}
+.fcell.dim{opacity:.22}
+.flegend{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+.flegend button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:11.5px;font-family:var(--mono);font-weight:500;cursor:pointer;display:inline-flex;gap:6px;align-items:center;color:var(--ink2)}
+.flegend button .dot{width:8px;height:8px;border-radius:2.5px}
+.flegend button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fabric-tip{min-height:38px;margin-top:11px;font-size:12.5px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:9px}
+.pipeline{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:44px;border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;background:var(--surface)}
+.pipe{padding:20px 20px 18px;position:relative;border-left:1px solid var(--line2)}
+.pipe:first-child{border-left:none}
+.pipe .n{font-family:var(--disp);font-weight:700;font-size:30px}
+.pipe h3{margin:2px 0 6px;font-family:var(--disp);font-size:16.5px;font-weight:600}
+.pipe p{margin:0;font-size:13.5px;color:var(--ink2)}
+.pipe .go{margin-top:12px;display:inline-block;font-weight:600;font-size:13px}
+.pipe::after{content:"→";position:absolute;right:-9px;top:24px;font-size:17px;color:var(--ink3);background:var(--surface);z-index:2;padding:0 2px}
+.pipe:last-child::after{display:none}
+.personas{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+.persona{padding:18px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .1s ease}
+.persona:hover{transform:translateY(-2px);text-decoration:none}
+.persona .ic{font-size:19px}
+.persona h3{margin:0;font-family:var(--disp);font-size:16px;font-weight:600;color:var(--ink)}
+.persona p{margin:0;font-size:13.5px;color:var(--ink2);flex:1}
+.persona .go{font-weight:600;font-size:13px;color:var(--accent-ink)}
+.value{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+.value .v{padding:16px 18px}
+.value h3{margin:0 0 5px;font-size:14.5px;font-family:var(--disp);font-weight:600}
+.value p{margin:0;font-size:13.5px;color:var(--ink2)}
+.ovh{margin-top:46px}
+.crosswalk{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ---------- risks ---------- */
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px;margin:18px 0 26px}
+.catcard{padding:15px 16px 13px;border-top:3px solid var(--cc);cursor:pointer;transition:transform .1s ease;display:flex;flex-direction:column;gap:7px}
+.catcard:hover{transform:translateY(-2px);text-decoration:none}
+.catcard h3{margin:0;font-family:var(--disp);font-size:15.5px;font-weight:600;color:var(--ink)}
+.catcard .meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.catcard p{margin:0;font-size:12.8px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.toolrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:14px}
+.toolrow input[type=search]{flex:1;min-width:200px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;font-family:var(--body);background:var(--surface)}
+.toolrow select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13.5px;background:var(--surface);font-family:var(--body)}
+.risklist{display:flex;flex-direction:column;gap:9px}
+.riskrow{display:grid;grid-template-columns:74px 1fr auto;gap:14px;padding:13px 16px;align-items:center;cursor:pointer;transition:transform .08s}
+.riskrow:hover{transform:translateX(2px);text-decoration:none}
+.riskrow .code{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--cc)}
+.riskrow .code::before{content:"";display:block;width:26px;height:3px;border-radius:2px;background:var(--cc);margin-bottom:4px}
+.riskrow .vec{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:2px}
+.riskrow .d{font-size:12.8px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.riskrow .cov{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-family:var(--mono);font-size:10.5px;color:var(--ink3);white-space:nowrap}
+.detail-head{padding:22px 24px;border-top:4px solid var(--cc)}
+.detail-head .codeline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.detail-head h1{font-family:var(--disp);font-size:clamp(20px,3vw,28px);margin:0 0 8px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
+.detail-head .desc{font-size:15.5px;color:var(--ink2);max-width:74ch;margin:0}
+.twocol{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
+.panel{padding:18px 20px}
+.panel h2{margin:0 0 4px;font-family:var(--disp);font-size:16px;font-weight:600}
+.panel .sub{font-size:12.5px;color:var(--ink3);margin:0 0 13px}
+.deflist{display:flex;flex-direction:column;gap:8px}
+.defitem{border:1px solid var(--line2);border-radius:8px;padding:11px 13px;background:var(--surface2);cursor:pointer;transition:border-color .1s}
+.defitem:hover{border-color:var(--accent);text-decoration:none}
+.defitem .t{font-weight:600;font-size:13.5px;color:var(--ink);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.defitem .g{font-family:var(--mono);font-size:10.5px;color:var(--ink3);letter-spacing:.04em}
+.defitem .x{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.notebox{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:var(--ink2);margin-top:14px}
+
+/* ---------- mitigations ---------- */
+.mitgroup{margin-bottom:14px;overflow:hidden}
+.mitgroup>summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;gap:12px;align-items:center}
+.mitgroup>summary::-webkit-details-marker{display:none}
+.mitgroup>summary .car{transition:transform .15s;color:var(--ink3);font-size:12px}
+.mitgroup[open]>summary .car{transform:rotate(90deg)}
+.mitgroup>summary h3{margin:0;font-family:var(--disp);font-size:16px;font-weight:600;flex:1}
+.mitgroup .mits{border-top:1px solid var(--line2);padding:8px}
+.mitrow{display:grid;grid-template-columns:1fr auto;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;align-items:center}
+.mitrow:hover{background:var(--surface2);text-decoration:none}
+.mitrow .t{font-weight:600;font-size:14px;color:var(--ink)}
+.mitrow .x{font-size:12.5px;color:var(--ink2);margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.prose p{margin:0 0 11px;color:var(--ink2);font-size:14.5px;max-width:74ch}
+.prose h4{font-family:var(--disp);font-size:13.5px;margin:16px 0 7px;font-weight:600;color:var(--ink)}
+.prose ul{margin:0 0 11px;padding-left:20px;color:var(--ink2);font-size:14px}
+.prose li{margin-bottom:4px}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px}
+.toollist{display:flex;flex-wrap:wrap;gap:7px}
+.toollist a{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:6px;padding:4px 9px;background:var(--surface2)}
+
+/* ---------- controls / audit ---------- */
+.auditbar{padding:16px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:16px;position:sticky;top:64px;z-index:20}
+.progress{flex:1;min-width:220px}
+.progress .lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink3);margin-bottom:5px}
+.pbar{height:9px;border-radius:5px;background:var(--line2);overflow:hidden;display:flex}
+.pbar i{display:block;height:100%}
+.pbar .p{background:var(--pass)}.pbar .q{background:var(--partial)}.pbar .f{background:var(--fail)}.pbar .x{background:#C2CAD6}
+.ctlgroup{margin-bottom:16px}
+.ctlgroup .gh{padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line2)}
+.ctlgroup .gh h3{margin:0;font-family:var(--disp);font-size:15.5px;font-weight:600;flex:1}
+.ctl{border-bottom:1px solid var(--line2);padding:15px 18px}
+.ctl:last-child{border-bottom:none}
+.ctl .head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:7px}
+.ctl .head h4{margin:0;font-size:14.5px;font-weight:600;cursor:pointer}
+.ctl .head h4:hover{color:var(--accent-ink)}
+.req{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:9px 11px;border:1px solid var(--line2);border-radius:8px;background:var(--surface2);margin-bottom:7px}
+.req .txt{font-size:13.5px;color:var(--ink)}
+.req .rid{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:3px}
+.lvl{font-family:var(--mono);font-size:10px;font-weight:600;padding:1.5px 6px;border-radius:4px;letter-spacing:.05em}
+.lvl.MUST,.lvl.MUSTNOT{background:#F4E3E3;color:var(--fail)}
+.lvl.SHOULD{background:#F4ECDD;color:var(--partial)}
+.lvl.MAY{background:#E2EDE6;color:var(--pass)}
+.statussel{border:1.5px solid var(--line);border-radius:7px;padding:5px 8px;font-size:12.5px;font-family:var(--body);background:var(--surface);font-weight:500}
+.statussel.s-pass{border-color:var(--pass);color:var(--pass)}
+.statussel.s-partial{border-color:var(--partial);color:var(--partial)}
+.statussel.s-fail{border-color:var(--fail);color:var(--fail)}
+.statussel.s-na{border-color:var(--na);color:var(--na)}
+.evd{width:100%;border:1px dashed var(--line);border-radius:7px;padding:6px 9px;font-size:12.5px;font-family:var(--body);margin-top:6px;background:#fff;color:var(--ink2);resize:vertical;min-height:30px}
+.ctl .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.fwchip{font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:5px;padding:2px 7px;border:1px solid var(--line);background:#fff;color:var(--ink2)}
+.fwchip.SOC2{border-color:#9FB4E8;color:#2C46C7;background:#F0F3FD}
+.fwchip.ISO27001{border-color:#A8CDB8;color:#1F7A45;background:#EDF7F1}
+.fwchip.OWASP{border-color:#E0BBA4;color:#A05A1F;background:#FBF2EA}
+
+/* ---------- planner ---------- */
+.plannerintro{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-bottom:18px;align-items:start}
+.kanban-sum{display:flex;gap:8px;flex-wrap:wrap}
+.ksum{flex:1 1 0;min-width:82px;padding:10px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.ksum .n{font-family:var(--disp);font-weight:700;font-size:21px}
+.ksum .l{font-size:11px;font-family:var(--mono);color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
+.plantable{width:100%;border-collapse:collapse}
+.plantable th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-weight:500}
+.plantable td{padding:9px 12px;border-bottom:1px solid var(--line2);font-size:13px;vertical-align:top}
+.plantable input[type=text]{border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12.5px;width:110px;font-family:var(--body);background:#fff}
+.plantable select{border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12.2px;background:#fff;font-family:var(--body)}
+.plantable .cname{font-weight:600;cursor:pointer;color:var(--ink)}
+.plantable .cname:hover{color:var(--accent-ink)}
+.pgrouph td{background:var(--surface2);font-family:var(--disp);font-weight:600;font-size:13.5px;padding:10px 12px}
+.prio{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:4px}
+.prio.H{background:#F4E3E3;color:var(--fail)}.prio.M{background:#F4ECDD;color:var(--partial)}.prio.L{background:#E8EBF1;color:var(--ink3)}
+.covercard{padding:16px 18px;margin-bottom:16px}
+.covgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-top:11px}
+.covcat{border:1px solid var(--line2);border-radius:8px;padding:9px 11px;background:var(--surface2)}
+.covcat .h{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;font-weight:600;margin-bottom:6px}
+.covcat .bar{height:6px;border-radius:3px;background:var(--line2);overflow:hidden}
+.covcat .bar i{display:block;height:100%;background:var(--cc)}
+
+/* ---------- community ---------- */
+.combar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 18px}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);cursor:pointer;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-weight:500;user-select:none}
+.switch input{accent-color:var(--accent);margin:0}
+.seedtag{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;color:#fff;background:var(--ink3);border-radius:4px;padding:1.5px 5px;text-transform:uppercase}
+.youtag{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;color:#fff;background:var(--accent);border-radius:4px;padding:1.5px 5px;text-transform:uppercase}
+.actgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px;margin-top:14px}
+.actcard{padding:16px;display:flex;flex-direction:column;gap:7px;cursor:pointer;transition:transform .1s}
+.actcard:hover{transform:translateY(-2px);text-decoration:none}
+.actcard .ic{font-size:18px}
+.actcard h3{margin:0;font-family:var(--disp);font-size:15px;font-weight:600;color:var(--ink)}
+.actcard p{margin:0;font-size:12.8px;color:var(--ink2);flex:1}
+.actcard .cnt{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.profilecard{padding:16px 18px;display:flex;flex-wrap:wrap;gap:9px 14px;align-items:center}
+.profilecard .f{display:flex;flex-direction:column;gap:3px}
+.profilecard label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.profilecard input,.profilecard select{border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:13px;font-family:var(--body);background:#fff;min-width:150px}
+.scalegrid{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.scaleq{border:1px solid var(--line2);border-radius:10px;padding:13px 15px;background:var(--surface2)}
+.scaleq .qh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:9px}
+.scaleq .qh b{font-size:13.5px}
+.scaleq .qh .dim{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.anchors{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.anchor{position:relative}
+.anchor input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.anchor span{display:block;border:1.5px solid var(--line);border-radius:8px;padding:8px 9px;font-size:11.6px;line-height:1.35;color:var(--ink2);background:#fff;height:100%;cursor:pointer;transition:border-color .1s}
+.anchor span b{display:block;font-family:var(--mono);font-size:10px;color:var(--ink3);margin-bottom:3px}
+.anchor input:checked+span{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.anchor input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.anchor .crowdmark{position:absolute;top:-7px;right:7px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:9px;border-radius:4px;padding:1px 5px}
+.pairwrap{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:16px}
+.paircard{padding:18px;border-top:3px solid var(--cc);display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--rad);box-shadow:var(--shadow);font-family:var(--body);transition:transform .1s}
+.paircard:hover{transform:translateY(-2px);border-color:var(--accent)}
+.paircard .code{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--cc)}
+.paircard .v{font-weight:600;font-size:14.5px;line-height:1.35}
+.paircard .d{font-size:12.5px;color:var(--ink2)}
+.pairvs{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:var(--disp);font-weight:700;color:var(--ink3)}
+.pairskip{margin-top:12px;text-align:center}
+.pairresult{margin-top:14px;font-size:13px}
+.rankline{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--ink2);padding:4px 0}
+.rankline .bar{flex:1;height:7px;border-radius:4px;background:var(--line2);overflow:hidden}
+.rankline .bar i{display:block;height:100%;background:var(--cc)}
+.heat{display:grid;grid-template-columns:34px repeat(5,1fr);gap:5px;margin-top:14px}
+.heat .axl{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9.5px;color:var(--ink3);writing-mode:vertical-rl;transform:rotate(180deg)}
+.heat .hcell{min-height:62px;border-radius:7px;padding:5px;display:flex;flex-wrap:wrap;gap:3px;align-content:flex-start;border:1px solid var(--line2)}
+.heat .hcell a{font-family:var(--mono);font-size:9.5px;font-weight:600;background:rgba(255,255,255,.85);border-radius:4px;padding:1px 4px;color:var(--ink2)}
+.heat .hax{font-family:var(--mono);font-size:9.5px;color:var(--ink3);text-align:center;padding-top:3px}
+.feed{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.feeditem{display:flex;gap:10px;padding:10px 13px;border:1px solid var(--line2);border-radius:8px;background:var(--surface2);font-size:12.8px;align-items:baseline}
+.feeditem .who{font-family:var(--mono);font-size:11px;color:var(--accent-ink);white-space:nowrap}
+.feeditem .what{flex:1;color:var(--ink2)}
+.draftrow{border:1.5px dashed var(--line);border-radius:var(--rad);background:repeating-linear-gradient(45deg,#fff,#fff 12px,#FBFCFD 12px,#FBFCFD 24px)}
+.drafthead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.crbadge{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--ink);color:#fff;border-radius:5px;padding:2px 7px;letter-spacing:.05em}
+.votebtns{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.simwarn{border:1px solid #E8D9A8;background:#FBF6E4;border-radius:8px;padding:10px 13px;font-size:12.8px;margin-top:10px}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.formgrid .f{display:flex;flex-direction:column;gap:4px}
+.formgrid label,.fullf label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.formgrid input,.formgrid select,.fullf input,.fullf textarea,.fullf select{border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:13.5px;font-family:var(--body);background:#fff;width:100%}
+.fullf{display:flex;flex-direction:column;gap:4px;margin-top:12px}
+.fullf textarea{min-height:74px;resize:vertical}
+.combo-note{font-size:12px;color:var(--ink3);margin-top:4px}
+.compane{margin-top:16px;padding:18px 20px;border-left:3px solid var(--accent)}
+.statbars{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-top:10px}
+.statbar .l{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.statbar .bar{height:7px;border-radius:4px;background:var(--line2);overflow:hidden;position:relative}
+.statbar .bar i{display:block;height:100%;background:var(--accent)}
+.statbar .bar .you{position:absolute;top:-2px;width:2.5px;height:11px;background:var(--ink);border-radius:2px}
+.rpnpill{font-family:var(--mono);font-size:12px;font-weight:600;border-radius:6px;padding:3px 9px;background:var(--ink);color:#fff}
+@media (max-width:740px){
+  .anchors{grid-template-columns:1fr}
+  .pairwrap{grid-template-columns:1fr}
+  .pairvs{flex-direction:row}
+  .heat .hcell{min-height:44px}
+}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 20px;font-size:12.5px;color:var(--ink3)}
+footer .in{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 24px}
+
+@media (max-width:920px){
+  .hero,.twocol,.plannerintro{grid-template-columns:1fr}
+  .pipeline{grid-template-columns:1fr}
+  .pipe{border-left:none;border-top:1px solid var(--line2)}
+  .pipe::after{content:"↓";right:auto;left:20px;top:auto;bottom:-10px}
+  .auditbar{position:static}
+  .riskrow{grid-template-columns:60px 1fr}
+  .riskrow .cov{display:none}
+  .plantable .hide-m{display:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#/overview" style="text-decoration:none"><svg width="20" height="17" viewBox="0 0 114 98" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex:none;align-self:center"><path d="M75.4588 0.394531C76.0684 0.394531 76.672 0.421038 77.2688 0.472142H113.7L94.2092 33.8618L94.1937 33.8359C90.4615 40.5222 83.4694 45.0232 75.4588 45.0232C68.7257 45.0232 62.7122 41.8432 58.749 36.8587L71.5016 58.7048C74.0367 63.0478 74.0367 68.4197 71.5016 72.7627L56.9998 97.6057L0.299805 0.472142H29.5035C34.4609 0.472142 39.0457 3.10446 41.5449 7.38581L55.5216 31.3293C54.4448 28.6771 53.8491 25.765 53.8491 22.7091C53.8491 10.3852 63.5241 0.394531 75.4588 0.394531Z" fill="#FC5F2B"/></svg>ValOS <span class="tag">Explorer</span></a>
+    <nav class="tabs" id="tabs">
+      <a href="#/overview" data-v="overview">Overview</a>
+      <a href="#/risks" data-v="risks">Risks</a>
+      <a href="#/mitigations" data-v="mitigations">Mitigations</a>
+      <a href="#/controls" data-v="controls">Controls &amp; Audit</a>
+      <a href="#/planner" data-v="planner">Planner</a>
+      <a href="#/community" data-v="community">Community</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="app" aria-live="polite"></main>
+<footer><div class="in">
+  <span>ValOS — Validator Operations Standard · © 2026 Lido Labs Foundation · Apache 2 License</span>
+  <span>This explorer is a navigation aid — the specification text is normative. <a href="https://github.com/lidofinance/valos" target="_blank" rel="noopener">Spec repository ↗</a></span>
+</div></footer>
+
+<script>
+const DATA = "__DATA__";
+
+/* ===== indexes ===== */
+const CATS = DATA.categories;
+const catById = Object.fromEntries(CATS.map(c=>[c.id,c]));
+const catByCode = Object.fromEntries(CATS.map(c=>[c.code,c]));
+const RISKS = DATA.risks;
+const riskByCode = Object.fromEntries(RISKS.map(r=>[r.code,r]));
+const ACTIVE = RISKS.filter(r=>r.status==='active');
+const MITS = DATA.mitigations;
+const mitById = Object.fromEntries(MITS.map(m=>[m.id,m]));
+const MGROUPS = DATA.mitGroups;
+const mgById = Object.fromEntries(MGROUPS.map(g=>[g.id,g]));
+const CTLS = DATA.controls;
+const ctlById = Object.fromEntries(CTLS.map(c=>[c.id,c]));
+const CGROUPS = DATA.ctlGroups;
+const cgById = Object.fromEntries(CGROUPS.map(g=>[g.id,g]));
+const S = DATA.stats;
+const OWASP_ITEMS={OWASP_TOP10:'Top 10',OWASP_ACCESS_CONTROL:'A01 Access Control',SSRF:'A10 SSRF',CRYPTOFAIL:'A02 Crypto Failures'};
+const fwFamily = f => f==='SOC2'?'SOC2':(f==='ISO27001'?'ISO27001':'OWASP');
+const FW_LABEL = f => f==='SOC2'?'SOC 2':(f==='ISO27001'?'ISO 27001':('OWASP '+(OWASP_ITEMS[f]||f.replace(/_/g,' '))));
+
+/* ===== workspace state (in-memory; export/import for persistence) ===== */
+const ws = { assess:{}, plan:{}, community:{ profile:null, claims:[], hideSeed:false, showDrafts:false } };
+const ASSESS_OPTS = [['','Not assessed'],['pass','Conformant'],['partial','Partial'],['fail','Gap'],['na','N/A']];
+const PLAN_OPTS = [['backlog','Backlog'],['scoping','Scoping'],['progress','In progress'],['blocked','Blocked'],['done','Done']];
+function getAssess(id){ return ws.assess[id] || (ws.assess[id]={status:'',note:''}); }
+function getPlan(id){
+  if(!ws.plan[id]){
+    const c = ctlById[id];
+    const n = c.all ? 99 : c.risks.length;
+    ws.plan[id] = {status:'backlog', owner:'', due:'', prio: n>=8?'H':(n>=3?'M':'L')};
+  }
+  return ws.plan[id];
+}
+
+/* ===== helpers ===== */
+const esc = s => String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const cc = code => `var(--c-${code})`;
+const ct = code => `var(--t-${code})`;
+function riskChip(code){
+  const r = riskByCode[code]; if(!r) return '';
+  const k = catById[r.cat].code;
+  return `<a class="chip" style="background:${ct(k)};color:${cc(k)}" href="#/risks/${code}" title="${esc(r.vector)}"><span class="dot" style="background:${cc(k)}"></span>${code}</a>`;
+}
+function ticks(m,c){
+  const t = (n,cls)=>Array.from({length:Math.min(n,8)},()=>`<i class="${cls}"></i>`).join('') + (n>8?`<span class="kbd-hint">+${n-8}</span>`:'');
+  return `<span class="ticks" title="${m} mitigations">${t(m,'m')}</span> <span class="ticks" title="${c} controls">${t(c,'c')}</span>`;
+}
+function prose(body){
+  let h=''; let inUl=false;
+  for(const b of (body||[])){
+    if(b.t==='b'){ if(!inUl){h+='<ul>';inUl=true;} h+=`<li>${esc(b.x)}</li>`; continue; }
+    if(inUl){h+='</ul>';inUl=false;}
+    if(b.t==='h'){ if(!/risks that|helps address|relevant controls|external controls/i.test(b.x)) h+=`<h4>${esc(b.x)}</h4>`; }
+    else h+=`<p>${esc(b.x)}</p>`;
+  }
+  if(inUl)h+='</ul>';
+  return h;
+}
+function groupRisksByCat(codes){
+  const by={};
+  codes.forEach(c=>{ const r=riskByCode[c]; if(!r)return; (by[r.cat]=by[r.cat]||[]).push(c); });
+  return CATS.filter(c=>by[c.id]).map(c=>({cat:c,codes:by[c.id]}));
+}
+function download(name, text, type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:type||'text/plain'}));
+  a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function csvRow(cells){ return cells.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',')+'\n'; }
+
+/* ===== router ===== */
+const app = document.getElementById('app');
+function route(){
+  const h = location.hash.replace(/^#\/?/,'') || 'overview';
+  const [view, arg] = h.split('/');
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on', a.dataset.v===view));
+  const views = {overview:vOverview, risks:vRisks, mitigations:vMits, controls:vControls, planner:vPlanner, community:vCommunity};
+  (views[view]||vOverview)(decodeURIComponent(arg||''));
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', route);
+
+/* ===== OVERVIEW ===== */
+function vOverview(){
+  const fwSet = new Set(); CTLS.forEach(c=>c.externals.forEach(e=>fwSet.add(fwFamily(e.fw))));
+  const avgDef = (ACTIVE.reduce((a,r)=>a+r.mits.length+r.ctls.length,0)/ACTIVE.length).toFixed(1);
+  app.innerHTML = `
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Validator Operations Standard · v1 editor's draft</span>
+      <h1 class="disp">Every way a node operation goes wrong — and what the best operators do about it.</h1>
+      <p class="lede">ValOS maps the full risk surface of running blockchain validators — slashing, downtime, key custody, hacking — to the mitigation strategies practitioners actually use, and to <strong>${S.reqs} testable controls</strong> you can assess, evidence, and certify against.</p>
+      <div class="statline">
+        <span class="st"><span class="n">${S.activeRisks}</span><span class="l">risks</span></span>
+        <span class="st"><span class="n">${S.mitigations}</span><span class="l">mitigations</span></span>
+        <span class="st"><span class="n">${S.reqs}</span><span class="l">requirements</span></span>
+        <span class="st"><span class="n">${avgDef}</span><span class="l">avg defenses / risk</span></span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <a class="btn primary" href="#/risks">Explore the risks</a>
+        <a class="btn" href="#/controls">Open the audit checklist</a>
+      </div>
+    </div>
+    <div class="card fabric-card">
+      <div class="fabric-head">
+        <div><strong style="font-family:var(--disp)">The risk surface</strong><div class="small muted">All ${S.activeRisks} active risks. Hover to inspect, click to dive in.</div></div>
+      </div>
+      <div class="fabric" id="fabric">${ACTIVE.map(r=>{
+        const k = catById[r.cat].code;
+        return `<a class="fcell" data-cat="${r.cat}" style="--cc:${cc(k)}" href="#/risks/${r.code}" data-code="${r.code}">${r.code}</a>`;
+      }).join('')}</div>
+      <div class="flegend" id="flegend">${CATS.map(c=>`<button data-cat="${c.id}"><span class="dot" style="background:${cc(c.code)}"></span>${c.code}</button>`).join('')}</div>
+      <div class="fabric-tip" id="fabrictip">Each cell is a documented risk vector. Colors are the eight risk categories.</div>
+    </div>
+  </section>
+
+  <section class="pipeline">
+    <a class="pipe" href="#/risks" style="text-decoration:none;color:inherit">
+      <span class="n" style="color:var(--c-SLS)">${S.activeRisks}</span>
+      <h3>Risks, named precisely</h3>
+      <p>Eight categories, from double-signing to delinquent withdrawals. Each risk has a stable ID, a vector, and a plain-language description of how it bites.</p>
+      <span class="go">Browse risks →</span>
+    </a>
+    <a class="pipe" href="#/mitigations" style="text-decoration:none;color:inherit">
+      <span class="n" style="color:var(--accent)">${S.mitigations}</span>
+      <h3>Mitigations that work</h3>
+      <p>Strategies contributed by operators in the field — anti-slashing databases, client diversity, least privilege — each linked to the exact risks it reduces, with tooling pointers.</p>
+      <span class="go">Study mitigations →</span>
+    </a>
+    <a class="pipe" href="#/controls" style="text-decoration:none;color:inherit">
+      <span class="n" style="color:var(--c-SPS)">${S.reqs}</span>
+      <h3>Controls you can prove</h3>
+      <p>Testable MUST/SHOULD requirements, cross-referenced to SOC&nbsp;2, ISO&nbsp;27001 and OWASP — so prior certifications count, and new ones come faster.</p>
+      <span class="go">Run a self-assessment →</span>
+    </a>
+  </section>
+
+  <section class="ovh">
+    <span class="eyebrow">Why operators go through this</span>
+    <h2 class="sec" style="margin-top:8px">The payoff of doing the risk work</h2>
+    <div class="value">
+      <div class="card v"><h3>Protect rewards, avoid penalties</h3><p>${riskByCode['SLS1']?'Slashing and downtime risks are the most densely mitigated areas of the standard':''} — the practices here exist because they demonstrably reduce double-signing incidents and missed attestations that cost real yield.</p></div>
+      <div class="card v"><h3>Win delegations and mandates</h3><p>Protocols and institutional stakers increasingly ask how you manage risk. A documented assessment against a recognized standard answers before they ask.</p></div>
+      <div class="card v"><h3>Reuse your SOC 2 / ISO 27001 work</h3><p>Controls are explicitly mapped to ${[...fwSet].length} external frameworks. Already certified? Much of the evidence carries over. Not yet? ValOS conformance gives you a head start.</p></div>
+      <div class="card v"><h3>Know what to fix first</h3><p>Every risk shows its defenses; every control shows the risks it closes. Gaps become visible — and the built-in planner turns them into an assignable work queue.</p></div>
+    </div>
+  </section>
+
+  <section class="ovh">
+    <span class="eyebrow">Pick your path</span>
+    <h2 class="sec" style="margin-top:8px">Four ways into the standard</h2>
+    <div class="personas">
+      <a class="card persona" href="#/risks"><span class="ic">🧭</span><h3>Just browsing</h3><p>Skim the eight risk categories and see at a glance how exposed a typical operation is — and how covered it could be.</p><span class="go">Start with risks →</span></a>
+      <a class="card persona" href="#/mitigations"><span class="ic">🔬</span><h3>Deep dive</h3><p>Read how practitioners mitigate specific risks: the reasoning, the best practices, and the tools the field actually uses.</p><span class="go">Open mitigations →</span></a>
+      <a class="card persona" href="#/controls"><span class="ic">🗂️</span><h3>Auditor / assessor</h3><p>Work the controls catalog as a checklist: record conformance per requirement, capture evidence notes, filter by framework, export the result.</p><span class="go">Open audit view →</span></a>
+      <a class="card persona" href="#/community"><span class="ic">🧠</span><h3>Add your knowledge</h3><p>Rate likelihood and impact, report incidents, propose missing risks — structured claims from the whole staking community.</p><span class="go">Contribute →</span></a>
+      <a class="card persona" href="#/planner"><span class="ic">📋</span><h3>Rolling it out</h3><p>Turn the ${S.controls} controls into an implementation plan: owners, priorities, status — and watch risk coverage climb as work lands.</p><span class="go">Open planner →</span></a>
+    </div>
+  </section>
+
+  <section class="ovh">
+    <span class="eyebrow">Framework crosswalk</span>
+    <h2 class="sec" style="margin-top:8px">Plays well with what you already have</h2>
+    <p class="lede small" style="margin-top:4px">Where a ValOS control corresponds to a control in a common framework, the mapping is shown inline — in both directions: it simplifies certifying against ValOS if you hold these, and assessing ValOS-conformant operators against them.</p>
+    <div class="crosswalk">${[...fwSet].map(f=>`<span class="fwchip ${esc(f)}" style="font-size:12.5px;padding:5px 11px">${f==='OWASP'?'OWASP Top 10':esc(FW_LABEL(f))}</span>`).join('')}</div>
+  </section>`;
+
+  /* fabric interactions */
+  const tip = document.getElementById('fabrictip');
+  document.getElementById('fabric').addEventListener('mouseover', e=>{
+    const c = e.target.closest('.fcell'); if(!c) return;
+    const r = riskByCode[c.dataset.code];
+    tip.innerHTML = `<strong class="mono" style="color:${cc(catById[r.cat].code)}">${r.code}</strong> · ${esc(r.vector)} — covered by <strong>${r.mits.length}</strong> mitigations and <strong>${r.ctls.length}</strong> controls.`;
+  });
+  let activeCat = null;
+  document.getElementById('flegend').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    activeCat = activeCat===b.dataset.cat ? null : b.dataset.cat;
+    document.querySelectorAll('#flegend button').forEach(x=>x.classList.toggle('on', x.dataset.cat===activeCat));
+    document.querySelectorAll('.fcell').forEach(x=>x.classList.toggle('dim', activeCat && x.dataset.cat!==activeCat));
+    tip.innerHTML = activeCat ? `<strong>${esc(catById[activeCat].name)}.</strong> ${esc(catById[activeCat].intro||'')}` : 'Each cell is a documented risk vector. Colors are the eight risk categories.';
+  });
+}
+
+/* ===== RISKS ===== */
+let riskFilter = {q:'', cat:'', grp:''};
+function vRisks(arg){
+  if(arg && riskByCode[arg]) return vRiskDetail(riskByCode[arg]);
+  if(arg && catById[arg]) riskFilter.cat = arg;
+  const grps = [...new Set(ACTIVE.map(r=>r.group))].filter(Boolean).sort();
+  const f = riskFilter;
+  const list = ACTIVE.filter(r=>
+    (!f.cat || r.cat===f.cat) &&
+    (!f.grp || r.group===f.grp) &&
+    (!f.q || (r.code+' '+r.vector+' '+r.desc).toLowerCase().includes(f.q.toLowerCase()))
+  );
+  app.innerHTML = `
+  <span class="eyebrow">Risk register</span>
+  <h1 class="disp" style="font-size:clamp(24px,3vw,32px)">Know what can hurt you</h1>
+  <p class="lede small">${S.activeRisks} active risks in eight categories. Identifiers are stable across versions of the standard — safe to reference in your own runbooks and risk register.</p>
+  <div class="catgrid">${CATS.map(c=>{
+    const n = ACTIVE.filter(r=>r.cat===c.id);
+    const mits = new Set(), ctls = new Set();
+    n.forEach(r=>{r.mits.forEach(m=>mits.add(m)); r.ctls.forEach(x=>ctls.add(x));});
+    return `<a class="card catcard ${f.cat===c.id?'':''}" style="--cc:${cc(c.code)};${f.cat&&f.cat!==c.id?'opacity:.45':''}" href="#/risks" data-cat="${c.id}">
+      <div class="meta"><span>${c.code} · ${n.length} risks</span><span>${mits.size} mit · ${ctls.size} ctl</span></div>
+      <h3>${esc(c.name)}</h3><p>${esc(c.intro||'')}</p></a>`;
+  }).join('')}</div>
+  <div class="toolrow">
+    <input type="search" id="rq" placeholder="Search risks — try “double sign”, “backup”, “phishing”…" value="${esc(f.q)}" aria-label="Search risks">
+    <select id="rg" aria-label="Filter by risk group"><option value="">All risk groups</option>${grps.map(g=>`<option ${f.grp===g?'selected':''}>${esc(g)}</option>`).join('')}</select>
+    <label class="switch"><input type="checkbox" id="draftsw" ${ws.community.showDrafts?'checked':''}> Community drafts</label>
+    ${f.cat?`<button class="btn small" id="clearcat">✕ ${esc(catById[f.cat].name)}</button>`:''}
+    <span class="muted small" style="margin-left:auto">${list.length} shown</span>
+  </div>
+  <div class="risklist">${list.map(r=>{
+    const k = catById[r.cat].code;
+    return `<a class="card riskrow" style="--cc:${cc(k)}" href="#/risks/${r.code}">
+      <span class="code">${r.code}</span>
+      <span><span class="vec">${esc(r.vector)}</span><span class="d">${esc(r.desc)}</span></span>
+      <span class="cov">${ticks(r.mits.length,r.ctls.length)}<span>${r.mits.length} mit · ${r.ctls.length} ctl</span></span>
+    </a>`;}).join('') || '<p class="muted">No risks match. Try clearing filters.</p>'}
+  </div>
+  ${ws.community.showDrafts ? draftOverlayHTML() : ''}`;
+  document.querySelectorAll('.catcard').forEach(c=>c.addEventListener('click', e=>{
+    e.preventDefault();
+    riskFilter.cat = riskFilter.cat===c.dataset.cat ? '' : c.dataset.cat;
+    vRisks();
+  }));
+  const rq = document.getElementById('rq');
+  rq.addEventListener('input', ()=>{ riskFilter.q = rq.value; vRisks(); document.getElementById('rq').focus(); const el=document.getElementById('rq'); el.setSelectionRange(el.value.length, el.value.length); });
+  document.getElementById('rg').addEventListener('change', e=>{ riskFilter.grp = e.target.value; vRisks(); });
+  const cl = document.getElementById('clearcat'); if(cl) cl.addEventListener('click', ()=>{ riskFilter.cat=''; vRisks(); });
+  const dsw = document.getElementById('draftsw'); if(dsw) dsw.addEventListener('change', ()=>{ ws.community.showDrafts = dsw.checked; markDirty(); vRisks(); });
+}
+
+function vRiskDetail(r){
+  const cat = catById[r.cat], k = cat.code;
+  if(r.status!=='active'){
+    app.innerHTML = `<a class="backlink" href="#/risks">← All risks</a>
+    <div class="card detail-head" style="--cc:${cc(k)}">
+      <div class="codeline"><span class="chip" style="background:${ct(k)};color:${cc(k)}">${r.code}</span><span class="pill">${r.status==='removed'?'Removed from the standard':'Superseded'}</span></div>
+      <h1>${r.status==='removed'?'This risk was removed':'This risk was consolidated'}</h1>
+      <p class="desc">${r.status==='removed'
+        ? `${r.code} no longer appears in the current version of the standard. Its identifier is retired and will not be reused.`
+        : `${r.code} is now covered by: ${(r.replacedBy||[]).map(id=>{const t=RISKS.find(x=>x.id===id);return t?`<a href="#/risks/${t.code}">${t.code}</a>`:'';}).join(', ')}. Identifiers stay stable, so older references still resolve.`}</p>
+    </div>`;
+    return;
+  }
+  const mits = r.mits.map(id=>mitById[id]);
+  const ctls = r.ctls.map(id=>ctlById[id]);
+  const gmits = (r.groupMits||[]).map(id=>mgById[id]).filter(g=>g);
+  const found = DATA.foundationalMits.length;
+  app.innerHTML = `
+  <a class="backlink" href="#/risks">← All risks</a>
+  <div class="card detail-head" style="--cc:${cc(k)}">
+    <div class="codeline">
+      <span class="chip" style="background:${ct(k)};color:${cc(k)};font-size:13px;padding:4px 10px"><span class="dot" style="background:${cc(k)}"></span>${r.code}</span>
+      <a class="pill" href="#/risks" id="catlink">${esc(cat.name)}</a>
+      ${r.group?`<span class="pill">Risk group: ${esc(r.group)}</span>`:''}
+      ${(r.replaces&&r.replaces.length)?`<span class="pill" title="Consolidates earlier risk IDs">replaces ${r.replaces.join(', ')}</span>`:''}
+    </div>
+    <h1>${esc(r.vector)}</h1>
+    <p class="desc">${esc(r.desc)}</p>
+  </div>
+  <div class="twocol">
+    <div class="card panel">
+      <h2>How the field defends against this</h2>
+      <p class="sub">${mits.length} mitigation ${mits.length===1?'strategy':'strategies'} in the standard specifically address ${r.code}.</p>
+      <div class="deflist">${mits.map(m=>`
+        <a class="defitem" href="#/mitigations/${m.id}">
+          <span class="t">${esc(m.name)}<span class="g">${esc(mgById[m.group].name)}</span></span>
+          <span class="x">${esc((m.body.find(b=>b.t==='p')||{x:''}).x.slice(0,150))}…</span>
+        </a>`).join('') || '<p class="muted small">No specific mitigation is linked — the foundational practices below apply.</p>'}
+      </div>
+      ${gmits.length?`<p class="sub" style="margin:14px 0 8px">Whole strategy areas also relevant:</p><div class="chiprow">${gmits.map(g=>`<a class="chip" style="background:var(--accent-soft);color:var(--accent-ink)" href="#/mitigations">${esc(g.name)}</a>`).join('')}</div>`:''}
+      <div class="notebox">Plus ${found} foundational practices — risk assessment, impact and probability analysis — that the standard applies to <em>every</em> risk, including this one. <a href="#/mitigations">See Risk Management →</a></div>
+    </div>
+    <div class="card panel">
+      <h2>How an auditor verifies it</h2>
+      <p class="sub">${ctls.length} testable control${ctls.length===1?'':'s'} close${ctls.length===1?'s':''} this risk.</p>
+      <div class="deflist">${ctls.map(c=>`
+        <a class="defitem" href="#/controls/${c.id}">
+          <span class="t">${esc(c.name)}<span class="g">${c.reqs.length} req</span></span>
+          <span class="x">${esc(c.reqs[0].text)}</span>
+          ${c.externals.length?`<span class="x" style="margin-top:5px">${c.externals.map(e=>`<span class="fwchip ${fwFamily(e.fw)}">${esc(FW_LABEL(e.fw))} ${esc(e.ref)}</span>`).join(' ')}</span>`:''}
+        </a>`).join('') || '<p class="muted small">No specific control targets this risk directly; foundational controls (documented risk assessment) apply.</p>'}
+      </div>
+    </div>
+  </div>
+  ${communityPanelHTML(r)}`;
+}
+
+/* ===== MITIGATIONS ===== */
+function vMits(arg){
+  if(arg && mitById[arg]) return vMitDetail(mitById[arg]);
+  app.innerHTML = `
+  <span class="eyebrow">Mitigation strategies</span>
+  <h1 class="disp" style="font-size:clamp(24px,3vw,32px)">What experienced operators actually do</h1>
+  <p class="lede small">${esc(DATA.meta.mitIntro)}</p>
+  <div style="margin-top:18px">${MGROUPS.map(g=>{
+    const mits = MITS.filter(m=>m.group===g.id);
+    const rset = new Set(); mits.forEach(m=>m.risks.forEach(x=>rset.add(x)));
+    const allFlag = mits.some(m=>m.all);
+    return `<details class="card mitgroup" ${MGROUPS.indexOf(g)===0?'open':''}>
+      <summary><span class="car">▶</span><h3>${esc(g.name)}</h3>
+        <span class="pill">${mits.length} strategies</span>
+        <span class="pill">${allFlag?'all risks':rset.size+' risks'}</span>
+      </summary>
+      <div class="mits">${mits.map(m=>`
+        <a class="mitrow" href="#/mitigations/${m.id}">
+          <span><span class="t">${esc(m.name)}</span><span class="x">${esc((m.body.find(b=>b.t==='p')||{x:''}).x)}</span></span>
+          <span class="pill">${m.all?'all risks':(m.risks.length+' risk'+(m.risks.length===1?'':'s'))}</span>
+        </a>`).join('')}
+      </div>
+    </details>`;
+  }).join('')}</div>`;
+}
+
+function vMitDetail(m){
+  const g = mgById[m.group];
+  const byCat = groupRisksByCat(m.risks);
+  app.innerHTML = `
+  <a class="backlink" href="#/mitigations">← All mitigations</a>
+  <div class="card detail-head" style="--cc:var(--accent)">
+    <div class="codeline"><span class="pill">${esc(g.name)}</span>${m.all?'<span class="chip" style="background:var(--accent-soft);color:var(--accent-ink)">foundational — applies to all risks</span>':''}</div>
+    <h1>${esc(m.name)}</h1>
+  </div>
+  <div class="twocol">
+    <div class="card panel">
+      <h2>The practice</h2>
+      <div class="prose" style="margin-top:10px">${prose(m.body)}</div>
+      ${m.tools.length?`<h2 style="margin-top:18px">Tools used in the field</h2><p class="sub">Uncurated, alphabetical — pointers, not endorsements.</p><div class="toollist">${m.tools.map(t=>`<a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.name)} ↗</a>`).join('')}</div>`:''}
+    </div>
+    <div>
+      <div class="card panel" style="margin-bottom:14px">
+        <h2>Risks this reduces</h2>
+        ${m.all?'<p class="sub">This is a foundational practice — the standard applies it to every documented risk.</p>':`<p class="sub">${m.risks.length} risk${m.risks.length===1?'':'s'} across ${byCat.length} categor${byCat.length===1?'y':'ies'}.</p>`}
+        ${byCat.map(({cat,codes})=>`<div style="margin-bottom:9px"><div class="small muted" style="margin-bottom:4px">${esc(cat.name)}</div><div class="chiprow">${codes.map(riskChip).join('')}</div></div>`).join('')}
+      </div>
+      ${m.relatedCtls.length?`<div class="card panel">
+        <h2>Verify it with these controls</h2>
+        <p class="sub">Controls in the catalog that test the same risks.</p>
+        <div class="deflist">${m.relatedCtls.map(id=>{const c=ctlById[id];return `<a class="defitem" href="#/controls/${c.id}"><span class="t">${esc(c.name)}<span class="g">${c.reqs.length} req</span></span></a>`;}).join('')}</div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+/* ===== CONTROLS / AUDIT ===== */
+let ctlFilter = {fw:'', q:''};
+function assessSummary(){
+  let pass=0, partial=0, fail=0, na=0, total=0;
+  CTLS.forEach(c=>c.reqs.forEach(rq=>{
+    total++;
+    const s=(ws.assess[rq.id]||{}).status;
+    if(s==='pass')pass++; else if(s==='partial')partial++; else if(s==='fail')fail++; else if(s==='na')na++;
+  }));
+  return {pass,partial,fail,na,total,done:pass+partial+fail+na};
+}
+function vControls(arg){
+  const sum = assessSummary();
+  const fws = [...new Set(CTLS.flatMap(c=>c.externals.map(e=>fwFamily(e.fw))))];
+  const f = ctlFilter;
+  const groups = CGROUPS.map(g=>({g, ctls: CTLS.filter(c=>
+    c.group===g.id &&
+    (!f.fw || c.externals.some(e=>fwFamily(e.fw)===f.fw) || (cgById[c.group].externals||[]).some(e=>fwFamily(e.fw)===f.fw)) &&
+    (!f.q || (c.name+' '+c.reqs.map(r=>r.text).join(' ')).toLowerCase().includes(f.q.toLowerCase()))
+  )})).filter(x=>x.ctls.length);
+  app.innerHTML = `
+  <span class="eyebrow">Controls catalog · audit mode</span>
+  <h1 class="disp" style="font-size:clamp(24px,3vw,32px)">Assess yourself the way an auditor would</h1>
+  <p class="lede small">Conformance to ValOS means meeting these requirements. Record a status and evidence note per requirement; export the result for your audit file. <strong>Your entries live in this browser session only — export to keep them, import to resume.</strong></p>
+  <div class="card auditbar">
+    <div class="progress">
+      <div class="lbl"><span>self-assessment progress</span><span>${sum.done}/${sum.total} assessed · ${sum.pass} conformant</span></div>
+      <div class="pbar">
+        <i class="p" style="width:${100*sum.pass/sum.total}%"></i>
+        <i class="q" style="width:${100*sum.partial/sum.total}%"></i>
+        <i class="f" style="width:${100*sum.fail/sum.total}%"></i>
+        <i class="x" style="width:${100*sum.na/sum.total}%"></i>
+      </div>
+    </div>
+    <select id="cfw" class="statussel" aria-label="Filter by framework"><option value="">All frameworks</option>${fws.map(x=>`<option value="${esc(x)}" ${f.fw===x?'selected':''}>Maps to ${x==='OWASP'?'OWASP Top 10':esc(FW_LABEL(x))}</option>`).join('')}</select>
+    <input type="search" id="cq" placeholder="Search requirements…" value="${esc(f.q)}" style="border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:13.5px" aria-label="Search controls">
+    <button class="btn small" id="expcsv">Export CSV</button>
+    <button class="btn small" id="expjson">Export workspace</button>
+    <button class="btn small" id="impjson">Import</button>
+    <input type="file" id="impfile" accept=".json" hidden>
+  </div>
+  ${groups.map(({g,ctls})=>{
+    let gp=0, gt=0;
+    ctls.forEach(c=>c.reqs.forEach(rq=>{gt++; if((ws.assess[rq.id]||{}).status==='pass')gp++;}));
+    return `<div class="card ctlgroup" id="${g.id}">
+    <div class="gh"><h3>${esc(g.name.replace(/^Controls for /,''))}</h3>
+      ${(g.externals||[]).map(e=>`<span class="fwchip ${fwFamily(e.fw)}">${esc(FW_LABEL(e.fw))} ${esc(e.ref)}</span>`).join('')}
+      <span class="pill">${gp}/${gt} conformant</span></div>
+    ${ctls.map(c=>renderCtl(c, arg===c.id)).join('')}
+    </div>`;
+  }).join('')}`;
+  bindControls();
+  if(arg && ctlById[arg]){ setTimeout(()=>{ const el=document.getElementById('ctl-'+arg); if(el){ el.scrollIntoView({block:'center'}); el.style.outline='2px solid var(--accent)'; setTimeout(()=>el.style.outline='',1600);} },0); }
+}
+function renderCtl(c, hl){
+  const byCat = groupRisksByCat(c.risks);
+  return `<div class="ctl" id="ctl-${c.id}">
+    <div class="head"><h4 data-go="#/controls/${c.id}">${esc(c.name)}</h4>
+      ${c.all?'<span class="pill">addresses all risks</span>':''}
+    </div>
+    ${c.reqs.map(rq=>{
+      const a = ws.assess[rq.id]||{status:'',note:''};
+      return `<div class="req">
+        <div><span class="lvl ${rq.level.replace(' ','')}">${rq.level}</span> <span class="txt">${esc(rq.text)}</span>
+          <div class="rid">${rq.id}</div>
+          <textarea class="evd" data-note="${rq.id}" placeholder="Evidence / notes — e.g. link to runbook, policy doc, screenshot ref…" ${a.note?'':'style="display:'+(a.status?'block':'none')+'"'}>${esc(a.note||'')}</textarea>
+        </div>
+        <select class="statussel s-${a.status||'none'}" data-req="${rq.id}" aria-label="Assessment status">
+          ${ASSESS_OPTS.map(([v,l])=>`<option value="${v}" ${a.status===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>`;
+    }).join('')}
+    ${prose(c.body)?`<div class="prose small" style="margin-top:4px">${prose(c.body)}</div>`:''}
+    <div class="meta">
+      ${c.externals.map(e=>`<span class="fwchip ${fwFamily(e.fw)}">${esc(FW_LABEL(e.fw))} ${esc(e.ref)}</span>`).join('')}
+      ${byCat.map(({codes})=>codes.map(riskChip).join('')).join('')}
+      ${c.relatedMits.length?`<span class="small muted" style="margin-left:auto">how-to: ${c.relatedMits.slice(0,2).map(id=>`<a href="#/mitigations/${id}">${esc(mitById[id].name)}</a>`).join(' · ')}</span>`:''}
+    </div>
+  </div>`;
+}
+function bindControls(){
+  app.querySelectorAll('[data-req]').forEach(sel=>sel.addEventListener('change', ()=>{
+    const a = getAssess(sel.dataset.req);
+    a.status = sel.value; markDirty();
+    sel.className = 'statussel s-'+(sel.value||'none');
+    const ta = app.querySelector(`[data-note="${sel.dataset.req}"]`);
+    if(ta && sel.value) ta.style.display='block';
+    refreshAuditBar();
+  }));
+  app.querySelectorAll('[data-note]').forEach(ta=>ta.addEventListener('input', ()=>{ getAssess(ta.dataset.note).note = ta.value; markDirty(); }));
+  app.querySelectorAll('[data-go]').forEach(h=>h.addEventListener('click', ()=>{ location.hash = h.dataset.go; }));
+  document.getElementById('cfw').addEventListener('change', e=>{ ctlFilter.fw=e.target.value; vControls(); });
+  const cq=document.getElementById('cq');
+  cq.addEventListener('input', ()=>{ ctlFilter.q=cq.value; vControls(); const el=document.getElementById('cq'); el.focus(); el.setSelectionRange(el.value.length, el.value.length); });
+  document.getElementById('expcsv').addEventListener('click', exportAssessCsv);
+  document.getElementById('expjson').addEventListener('click', exportWorkspace);
+  document.getElementById('impjson').addEventListener('click', ()=>document.getElementById('impfile').click());
+  document.getElementById('impfile').addEventListener('change', importWorkspace);
+}
+function refreshAuditBar(){
+  const sum = assessSummary();
+  const bar = app.querySelector('.pbar'); if(!bar) return;
+  bar.innerHTML = `<i class="p" style="width:${100*sum.pass/sum.total}%"></i><i class="q" style="width:${100*sum.partial/sum.total}%"></i><i class="f" style="width:${100*sum.fail/sum.total}%"></i><i class="x" style="width:${100*sum.na/sum.total}%"></i>`;
+  app.querySelector('.progress .lbl span:last-child').textContent = `${sum.done}/${sum.total} assessed · ${sum.pass} conformant`;
+}
+function exportAssessCsv(){
+  let csv = csvRow(['Requirement ID','Level','Requirement','Control','Group','Frameworks','Risks addressed','Status','Evidence']);
+  CTLS.forEach(c=>c.reqs.forEach(rq=>{
+    const a = ws.assess[rq.id]||{};
+    csv += csvRow([rq.id, rq.level, rq.text, c.name, cgById[c.group].name,
+      c.externals.map(e=>FW_LABEL(e.fw)+' '+e.ref).join('; '),
+      c.all?'All risks':c.risks.join(' '),
+      (ASSESS_OPTS.find(o=>o[0]===(a.status||''))||[])[1]||'Not assessed', a.note||'']);
+  }));
+  download('valos-self-assessment.csv', csv, 'text/csv');
+}
+
+/* ===== PLANNER ===== */
+function planSummary(){
+  const by = {backlog:0,scoping:0,progress:0,blocked:0,done:0};
+  CTLS.forEach(c=>{ by[getPlan(c.id).status]++; });
+  return by;
+}
+function coverage(){
+  const covered = new Set();
+  let anyAllDone = false;
+  CTLS.forEach(c=>{ if(getPlan(c.id).status==='done'){ c.risks.forEach(r=>covered.add(r)); if(c.all) anyAllDone=true; }});
+  return {covered, anyAllDone};
+}
+function vPlanner(){
+  const by = planSummary();
+  const {covered} = coverage();
+  app.innerHTML = `
+  <span class="eyebrow">Implementation planner</span>
+  <h1 class="disp" style="font-size:clamp(24px,3vw,32px)">From insight to rollout</h1>
+  <div class="plannerintro">
+    <p class="lede small" style="margin:0">Every control becomes a work item. Assign an owner, set a target, track status — priorities are pre-suggested from how many risks each control closes. As items reach <strong>Done</strong>, the coverage meter shows your shrinking exposure. Export the plan as CSV for your project tracker, or save the whole workspace (plan + assessment) as JSON. <strong>Nothing is stored on a server — export before you close the tab.</strong></p>
+    <div class="kanban-sum">${PLAN_OPTS.map(([v,l])=>`<div class="ksum"><div class="n">${by[v]}</div><div class="l">${l}</div></div>`).join('')}</div>
+  </div>
+  <div class="card covercard">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline">
+      <strong style="font-family:var(--disp)">Risk coverage from completed work</strong>
+      <span class="mono small muted">${covered.size}/${S.activeRisks} risks touched by a “Done” control</span>
+    </div>
+    <div class="covgrid">${CATS.map(c=>{
+      const n = ACTIVE.filter(r=>r.cat===c.id);
+      const cov = n.filter(r=>covered.has(r.code)).length;
+      return `<div class="covcat" style="--cc:${cc(c.code)}"><div class="h"><span style="color:${cc(c.code)}">${c.code}</span><span>${cov}/${n.length}</span></div><div class="bar"><i style="width:${n.length?100*cov/n.length:0}%"></i></div></div>`;
+    }).join('')}</div>
+  </div>
+  <div class="toolrow">
+    <button class="btn small" id="seed">Mark assessed-conformant controls as Done</button>
+    <span style="flex:1"></span>
+    <button class="btn small" id="pcsv">Export plan CSV</button>
+    <button class="btn small" id="pjson">Export workspace</button>
+    <button class="btn small" id="pimp">Import</button>
+    <input type="file" id="pimpfile" accept=".json" hidden>
+  </div>
+  <div class="card" style="overflow-x:auto">
+  <table class="plantable">
+    <thead><tr><th>Control</th><th class="hide-m">Closes</th><th>Priority</th><th class="hide-m">Owner</th><th class="hide-m">Target</th><th>Status</th></tr></thead>
+    <tbody>${CGROUPS.map(g=>{
+      const ctls = CTLS.filter(c=>c.group===g.id);
+      return `<tr class="pgrouph"><td colspan="6">${esc(g.name.replace(/^Controls for /,''))}</td></tr>` + ctls.map(c=>{
+        const p = getPlan(c.id);
+        return `<tr>
+          <td><span class="cname" data-go="#/controls/${c.id}">${esc(c.name)}</span><div class="kbd-hint">${c.reqs.length} requirement${c.reqs.length===1?'':'s'}</div></td>
+          <td class="hide-m">${c.all?'<span class="pill">all risks</span>':`<span class="mono small">${c.risks.length} risk${c.risks.length===1?'':'s'}</span>`}</td>
+          <td><select data-p="prio" data-c="${c.id}" class="prio-sel" style="border:none;background:none;cursor:pointer">
+            ${['H','M','L'].map(x=>`<option value="${x}" ${p.prio===x?'selected':''}>${x==='H'?'High':x==='M'?'Medium':'Low'}</option>`).join('')}</select></td>
+          <td class="hide-m"><input type="text" data-p="owner" data-c="${c.id}" value="${esc(p.owner)}" placeholder="who"></td>
+          <td class="hide-m"><input type="text" data-p="due" data-c="${c.id}" value="${esc(p.due)}" placeholder="e.g. Q3"></td>
+          <td><select data-p="status" data-c="${c.id}" class="statussel">${PLAN_OPTS.map(([v,l])=>`<option value="${v}" ${p.status===v?'selected':''}>${l}</option>`).join('')}</select></td>
+        </tr>`;
+      }).join('');
+    }).join('')}</tbody>
+  </table></div>`;
+  app.querySelectorAll('[data-p]').forEach(el=>{
+    const ev = el.tagName==='INPUT'?'input':'change';
+    el.addEventListener(ev, ()=>{
+      getPlan(el.dataset.c)[el.dataset.p] = el.value; markDirty();
+      if(el.dataset.p==='status' || el.dataset.p==='prio') vPlanner();
+    });
+  });
+  app.querySelectorAll('[data-go]').forEach(h=>h.addEventListener('click',()=>{location.hash=h.dataset.go;}));
+  document.getElementById('seed').addEventListener('click', ()=>{
+    CTLS.forEach(c=>{ if(c.reqs.every(rq=>(ws.assess[rq.id]||{}).status==='pass' || (ws.assess[rq.id]||{}).status==='na')
+      && c.reqs.some(rq=>(ws.assess[rq.id]||{}).status==='pass')) getPlan(c.id).status='done'; });
+    vPlanner();
+  });
+  document.getElementById('pcsv').addEventListener('click', ()=>{
+    let csv = csvRow(['Control','Group','Requirements','Risks closed','Priority','Owner','Target','Status']);
+    CTLS.forEach(c=>{ const p=getPlan(c.id);
+      csv += csvRow([c.name, cgById[c.group].name, c.reqs.map(r=>r.id).join('; '),
+        c.all?'All risks':c.risks.join(' '), p.prio, p.owner, p.due,
+        (PLAN_OPTS.find(o=>o[0]===p.status)||[])[1]]);
+    });
+    download('valos-implementation-plan.csv', csv, 'text/csv');
+  });
+  document.getElementById('pjson').addEventListener('click', exportWorkspace);
+  document.getElementById('pimp').addEventListener('click', ()=>document.getElementById('pimpfile').click());
+  document.getElementById('pimpfile').addEventListener('change', importWorkspace);
+}
+
+/* ===== workspace io ===== */
+function exportWorkspace(){
+  download('valos-workspace.json', JSON.stringify({v:2, exported:new Date().toISOString(), assess:ws.assess, plan:ws.plan, community:ws.community}, null, 1), 'application/json');
+}
+function importWorkspace(e){
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{
+      const j = JSON.parse(rd.result);
+      if(j.assess) Object.assign(ws.assess, j.assess);
+      if(j.plan) Object.assign(ws.plan, j.plan);
+      if(j.community) Object.assign(ws.community, j.community);
+      saveWS(); route();
+    }catch(err){ alert('Could not read that file — it should be a valos-workspace.json exported from this explorer.'); }
+  };
+  rd.readAsText(f);
+  e.target.value='';
+}
+
+/* ============================================================
+   COMMUNITY KNOWLEDGE LAYER (local prototype)
+   Atomic structured claims: estimates, pairwise judgments,
+   incidents, mitigation ideas, tool reports, new-risk drafts.
+   ============================================================ */
+
+/* ----- local persistence (localStorage when available, else memory) ----- */
+const WS_KEY = 'valos-explorer-ws-v2';
+let storageOK = false;
+function loadWS(){
+  try{
+    const raw = localStorage.getItem(WS_KEY);
+    storageOK = true;
+    if(raw){
+      const j = JSON.parse(raw);
+      if(j.assess) Object.assign(ws.assess, j.assess);
+      if(j.plan) Object.assign(ws.plan, j.plan);
+      if(j.community) Object.assign(ws.community, j.community);
+    }
+  }catch(e){ storageOK = false; }
+}
+function saveWS(){
+  try{ localStorage.setItem(WS_KEY, JSON.stringify({v:2, assess:ws.assess, plan:ws.plan, community:ws.community})); storageOK = true; }
+  catch(e){ storageOK = false; }
+}
+let _dirty = false;
+function markDirty(){ _dirty = true; }
+setInterval(()=>{ if(_dirty){ _dirty=false; saveWS(); } }, 1500);
+window.addEventListener('beforeunload', ()=>{ if(_dirty) saveWS(); });
+
+/* ----- dimensions & anchored scales ----- */
+const DIMS = [
+  {k:'freq', name:'Likelihood', s:'Likelihood', q:'How often does this actually happen?', anchors:[
+    'Theoretical — never seen it in the wild',
+    '~once per 1,000 validator-years',
+    '~once per 100 validator-years',
+    '~once per 10 validator-years',
+    'Yearly or more for a typical operator']},
+  {k:'fin', name:'Financial impact', s:'Financial', q:'If it hits, what does it cost?', anchors:[
+    'Negligible — dust',
+    'Minor — hours of missed rewards',
+    'Moderate — days of rewards or a small penalty',
+    'Severe — slashing or a correlation penalty',
+    'Catastrophic — loss of stake or keys']},
+  {k:'rep', name:'Reputational impact', s:'Reputation', q:'What does it do to trust in the operator?', anchors:[
+    'None — invisible',
+    'Internal embarrassment only',
+    'Noticed by delegators or peers',
+    'Public incident, delegations at risk',
+    'Existential — delegators exit, mandate lost']},
+  {k:'reg', name:'Regulatory / legal impact', s:'Regulatory', q:'Compliance and legal consequences?', anchors:[
+    'None',
+    'Internal policy breach',
+    'Reporting obligation triggered',
+    'Regulator inquiry or contract breach',
+    'License at risk / legal action']},
+  {k:'net', name:'Network health impact', s:'Network', q:'If many operators hit this, does Ethereum suffer?', anchors:[
+    'None — purely local',
+    'Marginal — a few missed duties',
+    'Noticeable — participation dips',
+    'Serious — correlated failures, client dominance',
+    'Critical — threatens finality or consensus']},
+  {k:'det', name:'Detectability', s:'Detect', q:'Would you notice before it costs you? (higher = harder to detect)', anchors:[
+    'Instantly obvious — alerts fire',
+    'Caught by routine monitoring',
+    'Found in periodic review or audit',
+    'Usually noticed only after impact',
+    'Silent until it costs you']},
+];
+const DIM_BY_K = Object.fromEntries(DIMS.map(d=>[d.k,d]));
+const PROFILE_FIELDS = [
+  {k:'handle', label:'GitHub handle', type:'text', ph:'@you (OAuth in the real version)'},
+  {k:'role', label:'You are a…', type:'sel', opts:['Solo home staker','Hobbyist (multi-validator)','Professional operator','Institutional operator','Client / tooling developer','Researcher / other']},
+  {k:'scale', label:'Scale', type:'sel', opts:['1–5 validators','6–50','51–500','501–5,000','5,000+','N/A']},
+  {k:'infra', label:'Infrastructure', type:'sel', opts:['Home bare metal','Colo / datacenter bare metal','Cloud','Hybrid','DVT cluster','N/A']},
+  {k:'custody', label:'Key custody', type:'sel', opts:['Local keystores','Remote signer','Remote signer + HSM','DVT / threshold','Third-party custodian','N/A']},
+];
+
+/* ----- deterministic seeded "community" demo data ----- */
+function _hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function _rng(seed){let a=_hash(seed);return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const SEED_BASE_TS = Date.UTC(2026,4,1);
+const SEED_PEOPLE = [
+  {h:'@nodewhale', role:'Professional operator', scale:'5,000+', infra:'Colo / datacenter bare metal', custody:'Remote signer + HSM', fAdj:{DOW:-.5,GIR:-.3}, dAdj:{reg:+.7,rep:+.4}},
+  {h:'@basement_staker', role:'Solo home staker', scale:'1–5 validators', infra:'Home bare metal', custody:'Local keystores', fAdj:{DOW:+.9,GIR:+.4}, dAdj:{reg:-1.2,rep:-.8}},
+  {h:'@failover_phil', role:'Professional operator', scale:'501–5,000', infra:'Hybrid', custody:'Remote signer', fAdj:{SLS:+.4}, dAdj:{}},
+  {h:'@clientdev_kira', role:'Client / tooling developer', scale:'N/A', infra:'N/A', custody:'N/A', fAdj:{SLS:-.3}, dAdj:{net:+.9}},
+  {h:'@dvt_dana', role:'Hobbyist (multi-validator)', scale:'6–50', infra:'DVT cluster', custody:'DVT / threshold', fAdj:{KEC:-.6}, dAdj:{net:+.4}},
+  {h:'@cloudstaker_cc', role:'Professional operator', scale:'51–500', infra:'Cloud', custody:'Remote signer', fAdj:{HCK:+.4,DOW:-.3}, dAdj:{}},
+  {h:'@rotki_rosa', role:'Hobbyist (multi-validator)', scale:'6–50', infra:'Home bare metal', custody:'Local keystores', fAdj:{FIN:+.3}, dAdj:{fin:+.3}},
+  {h:'@auditoor', role:'Researcher / other', scale:'N/A', infra:'N/A', custody:'N/A', fAdj:{}, dAdj:{det:+.5}},
+];
+const SEED_BIAS = {
+  FIN:{freq:1.6,fin:2.2,rep:1.6,reg:2.5,net:0.4,det:2.3},
+  SLS:{freq:0.9,fin:3.0,rep:2.7,reg:1.0,net:1.6,det:1.5},
+  DOW:{freq:2.6,fin:1.5,rep:1.8,reg:0.6,net:1.4,det:0.9},
+  KEC:{freq:0.9,fin:3.6,rep:3.0,reg:1.8,net:1.1,det:2.8},
+  HCK:{freq:1.2,fin:3.2,rep:3.2,reg:2.3,net:1.6,det:3.1},
+  GIR:{freq:2.2,fin:1.7,rep:1.4,reg:0.8,net:1.2,det:1.9},
+  SPS:{freq:1.4,fin:2.4,rep:2.1,reg:1.7,net:0.8,det:2.1},
+  RER:{freq:1.4,fin:1.4,rep:3.4,reg:1.6,net:1.0,det:2.4},
+};
+function buildSeed(){
+  const claims = [];
+  let t = SEED_BASE_TS;
+  const tick = ()=>{ t += 3600*1000*(1+Math.floor(_rng('t'+t)()*9)); return t; };
+  // estimates
+  ACTIVE.forEach(r=>{
+    const cat = catById[r.cat].code;
+    SEED_PEOPLE.forEach(p=>{
+      const rg = _rng(r.code+p.h);
+      if(rg() > 0.58) return; // partial coverage
+      DIMS.forEach(d=>{
+        if(rg() > 0.85) return; // occasionally skip a dimension
+        let v = SEED_BIAS[cat][d.k] + (d.k==='freq' ? (p.fAdj[cat]||0) : (p.dAdj[d.k]||0)) + (rg()*2-1)*1.05;
+        v = Math.max(0, Math.min(4, Math.round(v)));
+        claims.push({seed:true, type:'estimate', by:p.h, role:p.role, risk:r.code, dim:d.k, value:v, ts:tick()});
+      });
+    });
+  });
+  // pairwise likelihood votes
+  const rgp = _rng('pairs');
+  for(let i=0;i<170;i++){
+    const a = ACTIVE[Math.floor(rgp()*ACTIVE.length)];
+    let b = ACTIVE[Math.floor(rgp()*ACTIVE.length)];
+    if(a===b) continue;
+    const p = SEED_PEOPLE[Math.floor(rgp()*SEED_PEOPLE.length)];
+    const fa = SEED_BIAS[catById[a.cat].code].freq + (rgp()*2-1)*.8;
+    const fb = SEED_BIAS[catById[b.cat].code].freq + (rgp()*2-1)*.8;
+    claims.push({seed:true, type:'pairwise', by:p.h, a:a.code, b:b.code, winner: fa>=fb?'a':'b', ts:tick()});
+  }
+  // incidents
+  [
+    {risk:'SLS15', by:'@failover_phil', year:'2025', setup:'Professional, ~800 validators, two sites, remote signer', outcome:'Near-miss',
+     text:'During a DR drill the primary site recovered from a network partition while the failover was already signing. Doppelgänger detection on restart caught it before a double sign. We now require a manual fencing step before any failback.'},
+    {risk:'DOW4', by:'@basement_staker', year:'2024', setup:'Solo home staker, 3 validators, home bare metal', outcome:'Loss — minor',
+     text:'Family member unplugged the “noisy box” during a holiday. 9 hours of missed attestations (~0.004 ETH). UPS now has a label and the dashboard pings my phone.'},
+    {risk:'KEC6', by:'@cloudstaker_cc', year:'2025', setup:'Professional, cloud, remote signer', outcome:'Near-miss',
+     text:'A cleanup script nearly deleted the volume holding signer keystores — it was caught because deletion protection was on. Backups existed but were 11 days stale; we now test restores monthly.'},
+    {risk:'GIR16', by:'@rotki_rosa', year:'2025', setup:'Hobbyist, 12 validators', outcome:'Loss — minor',
+     text:'Fat-fingered a fee recipient address after a reinstall. Two proposals paid rewards to the wrong (own, luckily) address before monitoring flagged the mismatch.'},
+  ].forEach(x=>claims.push({seed:true, type:'incident', ...x, ts:tick()}));
+  // mitigation ideas & tool reports
+  claims.push({seed:true, type:'mitidea', by:'@failover_phil', risk:'SLS15', kind:'practice', ts:tick(),
+    text:'Treat failback like failover: require a fencing token (STONITH-style) so the primary cannot resume signing until the failover is provably stopped and the anti-slashing DB is re-imported.'});
+  claims.push({seed:true, type:'mitidea', by:'@dvt_dana', risk:'KEC6', kind:'practice', ts:tick(),
+    text:'DVT/threshold setups remove the single keystore as a point of loss — losing one share is an inconvenience, not an incident.'});
+  claims.push({seed:true, type:'mitidea', by:'@clientdev_kira', risk:'DOW19', kind:'counterexample', ts:tick(),
+    text:'“Always update fast” backfires around hard forks: updating all nodes to the same fresh release at once trades downtime risk for monoculture bug risk. Stagger by client and by cohort.'});
+  claims.push({seed:true, type:'tool', by:'@auditoor', risk:'SLS4', name:'Web3Signer', url:'https://docs.web3signer.consensys.net', verdict:'footgun', ts:tick(),
+    note:'Older compose examples ship with the slashing-protection DB effectively in-memory. Verify it is on persistent disk and exported in your runbooks.'});
+  claims.push({seed:true, type:'tool', by:'@nodewhale', risk:'SLS15', name:'Vouch + Dirk', url:'https://github.com/attestantio/vouch', verdict:'works', ts:tick(),
+    note:'Multi-beacon-node setup with Dirk signing rules gave us failover without a second validator client holding keys.'});
+  claims.push({seed:true, type:'tool', by:'@basement_staker', risk:'KEC1', name:'ethdo', url:'https://github.com/wealdtech/ethdo', verdict:'works', ts:tick(),
+    note:'Scriptable key inspection and offline operations — keeps keystore handling out of ad-hoc shell history.'});
+  // community draft risks
+  const drafts = [
+    {id:'CR-1', by:'@nodewhale', cat:'sec-risks-downtime', group:'Infrastructure',
+     vector:'MEV relay dependency: relay outage or censorship degrades block value',
+     desc:'Operators relying on a small set of MEV relays inherit their availability and policy: a relay outage, deprecation, or censorship decision reduces proposal value or causes missed/late blocks, concentrating risk outside the operator\u2019s control.'},
+    {id:'CR-2', by:'@basement_staker', cat:'sec-risks-infra', group:'Process',
+     vector:'Expired TLS certificate or lapsed domain on remote signer / internal endpoint',
+     desc:'Certificates and domain registrations are renewed on calendars nobody owns. An expiry on a signer endpoint, beacon API, or monitoring ingress silently breaks signing or alerting until duties are already being missed.'},
+    {id:'CR-3', by:'@rotki_rosa', cat:'sec-risks-infra', group:'People',
+     vector:'Single-maintainer burnout: updates, alerts and runbooks decay over time',
+     desc:'Small operations often depend on one motivated person. Interest fades, alerts get muted, updates lag and undocumented setups rot \u2014 a slow-burn risk that ends in avoidable downtime or a panicked, error-prone recovery.'},
+  ];
+  drafts.forEach(d=>claims.push({seed:true, type:'newrisk', ts:tick(), status:'draft', ...d}));
+  claims.push({seed:true, type:'crvote', by:'@failover_phil', target:'CR-1', v:'confirm', ts:tick()});
+  claims.push({seed:true, type:'crvote', by:'@cloudstaker_cc', target:'CR-1', v:'confirm', ts:tick()});
+  claims.push({seed:true, type:'crvote', by:'@dvt_dana', target:'CR-2', v:'confirm', ts:tick()});
+  return claims;
+}
+const SEED_CLAIMS = buildSeed();
+
+/* ----- claim access ----- */
+function allClaims(){
+  const mine = ws.community.claims;
+  return ws.community.hideSeed ? mine.slice() : SEED_CLAIMS.concat(mine);
+}
+function myClaims(){ return ws.community.claims; }
+function addClaim(c){
+  c.ts = Date.now(); c.by = (ws.community.profile&&ws.community.profile.handle)||'@you'; c.mine = true;
+  if(ws.community.profile) c.role = ws.community.profile.role;
+  ws.community.claims.push(c); markDirty();
+  return c;
+}
+function med(arr){ if(!arr.length) return null; const s=[...arr].sort((a,b)=>a-b); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function aggRisk(code){
+  const est = allClaims().filter(c=>c.type==='estimate'&&c.risk===code);
+  const out = {n:new Set(est.map(c=>c.by)).size, dims:{}};
+  DIMS.forEach(d=>{
+    const vals = est.filter(c=>c.dim===d.k).map(c=>c.value);
+    out.dims[d.k] = {med:med(vals), n:vals.length};
+  });
+  const sevs = ['fin','rep','reg','net'].map(k=>out.dims[k].med).filter(v=>v!=null);
+  out.sev = sevs.length?Math.max(...sevs):null;
+  out.rpn = (out.dims.freq.med!=null&&out.sev!=null&&out.dims.det.med!=null)
+    ? Math.round((out.dims.freq.med+1)*(out.sev+1)*(out.dims.det.med+1)) : null;
+  return out;
+}
+function myEstimate(code,dim){
+  const m = myClaims().filter(c=>c.type==='estimate'&&c.risk===code&&c.dim===dim);
+  return m.length? m[m.length-1].value : null;
+}
+function eloRanking(){
+  const R = {}; ACTIVE.forEach(r=>R[r.code]=1500);
+  allClaims().filter(c=>c.type==='pairwise').sort((a,b)=>a.ts-b.ts).forEach(v=>{
+    if(!(v.a in R)||!(v.b in R)||(v.winner!=='a'&&v.winner!=='b')) return;
+    const Ea = 1/(1+Math.pow(10,(R[v.b]-R[v.a])/400));
+    const Sa = v.winner==='a'?1:0;
+    R[v.a]+=32*(Sa-Ea); R[v.b]+=32*((1-Sa)-(1-Ea));
+  });
+  return Object.entries(R).sort((x,y)=>y[1]-x[1]);
+}
+function communityRisks(){
+  return allClaims().filter(c=>c.type==='newrisk');
+}
+function crVotes(id){
+  const v = allClaims().filter(c=>c.type==='crvote'&&c.target===id);
+  return {confirms:v.filter(x=>x.v==='confirm'), dups:v.filter(x=>x.v==='dup')};
+}
+function nextCrId(){
+  let n = 0;
+  communityRisks().concat(myClaims().filter(c=>c.type==='newrisk')).forEach(c=>{
+    const m = /^CR-(\d+)$/.exec(c.id); if(m) n=Math.max(n, +m[1]);
+  });
+  return 'CR-'+(n+1);
+}
+/* similarity: cosine-ish token overlap against existing risks */
+const STOP = new Set('a an the of to in on for and or is are be can that this with by as from not lead leads leading due risk risks failure operational'.split(' '));
+function toks(s){ return new Set(String(s).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!STOP.has(w))); }
+function similar(text){
+  const q = toks(text); if(q.size<2) return [];
+  return ACTIVE.map(r=>{
+    const t = toks(r.vector+' '+r.desc);
+    let inter=0; q.forEach(w=>{if(t.has(w))inter++;});
+    return {r, s: inter/Math.sqrt(q.size*t.size)};
+  }).filter(x=>x.s>0.13).sort((a,b)=>b.s-a.s).slice(0,3);
+}
+
+/* ----- shared widgets ----- */
+function seedToggleHTML(){
+  return `<label class="switch"><input type="checkbox" id="seedtoggle" ${ws.community.hideSeed?'':'checked'}> Include demo community data</label>`;
+}
+function bindSeedToggle(rerender){
+  const t = document.getElementById('seedtoggle');
+  if(t) t.addEventListener('change', ()=>{ ws.community.hideSeed = !t.checked; markDirty(); rerender(); });
+}
+function storageNote(){
+  return storageOK
+    ? `<span class="pill" title="Saved automatically in this browser via localStorage">● saved locally in this browser</span>`
+    : `<span class="pill" style="border-color:var(--partial);color:var(--partial)" title="This environment blocks persistent storage — use Export workspace">○ no persistent storage here — use Export</span>`;
+}
+function profileComplete(){ const p=ws.community.profile; return p && p.handle && p.role; }
+function profileFormHTML(){
+  const p = ws.community.profile||{};
+  return `<div class="card profilecard" id="profilecard">
+    <div style="flex-basis:100%;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <strong style="font-family:var(--disp)">Your operator profile</strong>
+      <span class="small muted">Estimates are tagged with this context — SLS14 means something different at 5 validators vs 5,000. In the real version this comes from GitHub sign-in.</span>
+    </div>
+    ${PROFILE_FIELDS.map(f=>`<span class="f"><label for="pf-${f.k}">${f.label}</label>${
+      f.type==='text'
+        ? `<input id="pf-${f.k}" type="text" placeholder="${f.ph}" value="${esc(p[f.k]||'')}">`
+        : `<select id="pf-${f.k}"><option value="">—</option>${f.opts.map(o=>`<option ${p[f.k]===o?'selected':''}>${o}</option>`).join('')}</select>`
+    }</span>`).join('')}
+    <button class="btn small primary" id="pf-save" style="align-self:flex-end">Save profile</button>
+  </div>`;
+}
+function bindProfileForm(after){
+  const b = document.getElementById('pf-save'); if(!b) return;
+  b.addEventListener('click', ()=>{
+    const p = {};
+    PROFILE_FIELDS.forEach(f=>{ p[f.k] = document.getElementById('pf-'+f.k).value.trim(); });
+    if(p.handle && !p.handle.startsWith('@')) p.handle = '@'+p.handle;
+    ws.community.profile = p; markDirty();
+    if(after) after();
+  });
+}
+function needProfile(backHash){
+  app.innerHTML = `<a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">one-time setup</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">First, who's estimating?</h1>
+  <p class="lede small">Risk judgments only become knowledge with context attached. Thirty seconds, once.</p>
+  ${profileFormHTML()}`;
+  bindProfileForm(()=>{ location.hash = backHash; route(); });
+}
+function anchorsHTML(dim, name, current, crowdMed){
+  const d = DIM_BY_K[dim];
+  return `<div class="scaleq" data-dim="${dim}">
+    <div class="qh"><b>${d.q}</b><span class="dim">${d.name}</span></div>
+    <div class="anchors">${d.anchors.map((a,i)=>`
+      <label class="anchor">
+        <input type="radio" name="${name}-${dim}" value="${i}" ${current===i?'checked':''}>
+        <span><b>${i}</b>${a}</span>
+        ${crowdMed!=null&&Math.round(crowdMed)===i?'<span class="crowdmark" title="community median">crowd</span>':''}
+      </label>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ----- COMMUNITY DASHBOARD ----- */
+function vCommunity(arg){
+  if(arg==='rate') return vRate('');
+  if(arg && arg.startsWith('rate:')) return vRate(arg.slice(5));
+  if(arg==='pair') return vPair();
+  if(arg==='submit') return vSubmit();
+  if(arg==='queue') return vQueue();
+  if(arg==='incident') return vIncident('');
+  if(arg && arg.startsWith('incident:')) return vIncident(arg.slice(9));
+  if(arg && arg.startsWith('idea:')) return vIdea(arg.slice(5));
+  if(arg && /^CR-\d+$/.test(arg)) return vDraftDetail(arg);
+
+  const mine = myClaims();
+  const drafts = communityRisks();
+  const ratedRisks = new Set(allClaims().filter(c=>c.type==='estimate'&&c.dim==='freq').map(c=>c.risk));
+  const contributors = new Set(allClaims().map(c=>c.by)).size;
+  const feed = allClaims().slice().sort((a,b)=>b.ts-a.ts).slice(0,8);
+  app.innerHTML = `
+  <span class="eyebrow">Community knowledge · local prototype</span>
+  <h1 class="disp" style="font-size:clamp(24px,3vw,34px)">Add your two cents — as structured claims</h1>
+  <p class="lede small">The spec was built with ~10 professional operators. This layer collects what the rest of the field knows, as small verifiable claims: estimates, comparisons, incidents, fixes and tools. Everything stays on this machine for now — a future backend would sync it through GitHub.</p>
+  <div class="combar">${seedToggleHTML()} ${storageNote()}
+    <span class="pill">${contributors} contributor${contributors===1?'':'s'}</span>
+    <span class="pill">${mine.length} claim${mine.length===1?'':'s'} by you</span>
+    <span class="pill">${ratedRisks.size}/${S.activeRisks} risks have likelihood data</span>
+  </div>
+  ${profileComplete()
+    ? `<div class="card profilecard" style="padding:11px 16px"><strong class="mono" style="font-size:13px">${esc(ws.community.profile.handle)}</strong><span class="small muted">${esc(ws.community.profile.role||'')} · ${esc(ws.community.profile.scale||'')} · ${esc(ws.community.profile.infra||'')} · ${esc(ws.community.profile.custody||'')}</span><button class="btn small" id="pf-edit" style="margin-left:auto">Edit profile</button></div>`
+    : profileFormHTML()}
+  <div class="actgrid">
+    <a class="card actcard" href="#/community/pair"><span class="ic">⚖️</span><h3>Quick judgments</h3><p>Which risk bites harder? Fast pairwise calls build a crowd likelihood ranking — almost a game.</p><span class="cnt">${allClaims().filter(c=>c.type==='pairwise').length} votes so far</span></a>
+    <a class="card actcard" href="#/community/rate"><span class="ic">🎚️</span><h3>Rate a risk</h3><p>Anchored FMECA-style scales: likelihood, four impact dimensions, detectability. See the crowd after you commit.</p><span class="cnt">${mine.filter(c=>c.type==='estimate').length} estimates by you</span></a>
+    <a class="card actcard" href="#/community/incident"><span class="ic">📓</span><h3>Report an incident</h3><p>It happened, or almost did. Anonymous-friendly frequency data — the most valuable claim there is.</p><span class="cnt">${allClaims().filter(c=>c.type==='incident').length} reports</span></a>
+    <a class="card actcard" href="#/community/submit"><span class="ic">➕</span><h3>Propose a new risk</h3><p>Something the register misses. Live duplicate-check against all ${S.activeRisks} existing vectors.</p><span class="cnt">${drafts.length} community drafts</span></a>
+    <a class="card actcard" href="#/community/queue"><span class="ic">🗳️</span><h3>Review queue</h3><p>Confirm or dedupe proposed risks. Three confirmations make a draft a candidate for the editors.</p><span class="cnt">${drafts.filter(d=>crVotes(d.id).confirms.length>=3).length} candidates ready</span></a>
+  </div>
+  <section class="ovh" style="margin-top:36px">
+    <span class="eyebrow">Crowd picture</span>
+    <h2 class="sec" style="margin-top:8px">Likelihood × severity heat map</h2>
+    <p class="small muted" style="margin:2px 0 0">Community medians. Severity = worst of the four impact dimensions. Click a code to inspect; rate more risks to fill the gaps.</p>
+    <div class="card" style="padding:16px 18px;margin-top:12px">${heatmapHTML()}</div>
+  </section>
+  <section class="ovh" style="margin-top:30px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 class="sec">Crowd likelihood ranking <span class="muted small" style="font-weight:400">(pairwise Elo, top 10)</span></h2>
+      <a class="small" href="#/community/pair">cast votes →</a>
+    </div>
+    <div class="card" style="padding:14px 18px">${eloRanking().slice(0,10).map(([code,r],i)=>{
+      const rk = riskByCode[code], k = catById[rk.cat].code;
+      return `<div class="rankline" style="--cc:${cc(k)}"><span style="width:18px;text-align:right">${i+1}</span><a href="#/risks/${code}" style="width:52px">${code}</a><span class="bar"><i style="width:${Math.max(4,Math.min(100,(r-1380)/3.2))}%"></i></span><span style="width:42px;text-align:right">${Math.round(r)}</span></div>`;
+    }).join('')}</div>
+  </section>
+  <section class="ovh" style="margin-top:30px">
+    <h2 class="sec">Latest claims</h2>
+    <div class="feed">${feed.map(feedItemHTML).join('')||'<p class="muted small">Nothing yet — yours could be first.</p>'}</div>
+  </section>`;
+  bindSeedToggle(()=>vCommunity());
+  bindProfileForm(()=>vCommunity());
+  const pe = document.getElementById('pf-edit');
+  if(pe) pe.addEventListener('click', ()=>{
+    document.querySelector('.profilecard').outerHTML = profileFormHTML();
+    bindProfileForm(()=>vCommunity());
+  });
+}
+function feedItemHTML(c){
+  const tag = c.seed?'<span class="seedtag">demo</span>':'<span class="youtag">you</span>';
+  const rl = code=>{const r=riskByCode[code]; return r?`<a href="#/risks/${code}" class="mono">${code}</a>`:`<a href="#/community/${code}" class="mono">${code}</a>`;};
+  let what='';
+  if(c.type==='estimate') what=`rated ${rl(c.risk)} ${DIM_BY_K[c.dim].name.toLowerCase()} = <b>${c.value}</b> (${esc(DIM_BY_K[c.dim].anchors[c.value])})`;
+  else if(c.type==='pairwise') what=`judged ${rl(c.winner==='a'?c.a:c.b)} more likely than ${rl(c.winner==='a'?c.b:c.a)}`;
+  else if(c.type==='incident') what=`reported a ${c.outcome.toLowerCase()} on ${rl(c.risk)}: “${esc(c.text.slice(0,90))}…”`;
+  else if(c.type==='mitidea') what=`${c.kind==='counterexample'?'flagged a counterexample':'suggested a practice'} on ${rl(c.risk)}: “${esc(c.text.slice(0,90))}…”`;
+  else if(c.type==='tool') what=`reported tool <b>${esc(c.name)}</b> (${c.verdict}) on ${rl(c.risk)}`;
+  else if(c.type==='newrisk') what=`proposed new risk <a href="#/community/${c.id}" class="mono">${c.id}</a>: “${esc(c.vector)}”`;
+  else if(c.type==='crvote') what=`${c.v==='confirm'?'confirmed':'flagged as duplicate'} draft <a href="#/community/${c.target}" class="mono">${c.target}</a>`;
+  return `<div class="feeditem"><span class="who">${esc(c.by)}</span><span class="what">${what}</span>${tag}</div>`;
+}
+function heatmapHTML(){
+  const cells = Array.from({length:5},()=>Array.from({length:5},()=>[]));
+  ACTIVE.forEach(r=>{
+    const a = aggRisk(r.code);
+    if(a.dims.freq.med==null||a.sev==null) return;
+    cells[Math.round(a.sev)][Math.round(a.dims.freq.med)].push(r.code);
+  });
+  const colr = (x,y)=>{ const v=(x+1)*(y+1)/25; const h=120-120*v; return `hsl(${h} 62% ${92-26*v}%)`; };
+  let h = '<div class="heat">';
+  for(let sev=4; sev>=0; sev--){
+    h += `<div class="axl">${sev===4?'severity →':''}</div>`;
+    for(let f=0; f<5; f++){
+      h += `<div class="hcell" style="background:${colr(f,sev)}" title="likelihood ${f}, severity ${sev}">${cells[sev][f].map(c=>`<a href="#/risks/${c}">${c}</a>`).join('')}</div>`;
+    }
+  }
+  h += '<div></div>' + Array.from({length:5},(_,i)=>`<div class="hax">${i}${i===4?' · likelihood →':''}</div>`).join('');
+  return h + '</div>';
+}
+
+/* ----- RATE A RISK ----- */
+function pickRiskToRate(){
+  const counts = {};
+  myClaims().filter(c=>c.type==='estimate').forEach(c=>counts[c.risk]=(counts[c.risk]||0)+1);
+  const sorted = ACTIVE.slice().sort((a,b)=>(counts[a.code]||0)-(counts[b.code]||0) || (aggRisk(a.code).n - aggRisk(b.code).n));
+  return sorted[0].code;
+}
+function vRate(code){
+  if(!profileComplete()) return needProfile('#/community/rate'+(code?':'+code:''));
+  if(!code || !riskByCode[code]) code = pickRiskToRate();
+  const r = riskByCode[code], k = catById[r.cat].code;
+  const agg = aggRisk(code);
+  const showCrowd = !!sessionShown[code];
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">anchored estimate · ${agg.n} contributor${agg.n===1?'':'s'} so far</span>
+  <div class="card detail-head" style="--cc:${cc(k)};margin-top:8px">
+    <div class="codeline"><span class="chip" style="background:${ct(k)};color:${cc(k)}">${code}</span><span class="pill">${esc(catById[r.cat].name)}</span></div>
+    <h1 style="font-size:clamp(18px,2.4vw,24px)">${esc(r.vector)}</h1>
+    <p class="desc small">${esc(r.desc)}</p>
+  </div>
+  <div class="scalegrid" id="scales">
+    ${DIMS.map(d=>anchorsHTML(d.k,'rate',myEstimate(code,d.k), showCrowd?agg.dims[d.k].med:null)).join('')}
+  </div>
+  <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center">
+    <button class="btn primary" id="saverate">Commit estimates</button>
+    <a class="btn" href="#/community/rate" id="skiprate">Skip — give me another</a>
+    <span class="small muted">Commit first, then the crowd medians are revealed — anchoring works both ways.</span>
+  </div>
+  <div id="rateresult"></div>`;
+  document.getElementById('saverate').addEventListener('click', ()=>{
+    let saved = 0;
+    DIMS.forEach(d=>{
+      const sel = document.querySelector(`input[name="rate-${d.k}"]:checked`);
+      if(sel){ addClaim({type:'estimate', risk:code, dim:d.k, value:+sel.value}); saved++; }
+    });
+    if(!saved){ document.getElementById('rateresult').innerHTML = '<p class="small muted" style="margin-top:10px">Pick at least one scale first.</p>'; return; }
+    sessionShown[code] = true;
+    const a2 = aggRisk(code);
+    document.getElementById('rateresult').innerHTML = `
+      <div class="card compane">
+        <strong style="font-family:var(--disp)">Saved — here's where the crowd sits</strong>
+        <div class="statbars">${DIMS.map(d=>{
+          const m = a2.dims[d.k].med, y = myEstimate(code,d.k);
+          return `<div class="statbar"><div class="l"><span>${d.s}</span><span>${m!=null?'med '+m:'–'}</span></div>
+            <div class="bar">${m!=null?`<i style="width:${(m/4)*100}%"></i>`:''}${y!=null?`<span class="you" style="left:${(y/4)*100}%" title="you: ${y}"></span>`:''}</div></div>`;
+        }).join('')}</div>
+        <p class="small muted" style="margin:12px 0 0">Black tick = you, bar = community median. Disagreement is signal — it often means a risk reads differently per setup and may need splitting. ${a2.rpn?`Community RPN (O×S×D): <span class="rpnpill">${a2.rpn}</span> / 125`:''}</p>
+        <div style="margin-top:12px;display:flex;gap:9px"><a class="btn primary" href="#/community/rate">Rate another →</a><a class="btn" href="#/risks/${code}">View ${code}</a></div>
+      </div>`;
+    document.getElementById('rateresult').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+}
+const sessionShown = {};
+
+/* ----- PAIRWISE ----- */
+let pairState = null, pairCount = 0;
+function newPair(){
+  let a = ACTIVE[Math.floor(Math.random()*ACTIVE.length)], b;
+  do{ b = ACTIVE[Math.floor(Math.random()*ACTIVE.length)]; }while(b===a);
+  pairState = {a,b};
+}
+function vPair(){
+  if(!pairState) newPair();
+  const {a,b} = pairState;
+  const card = (r,side)=>{ const k=catById[r.cat].code; return `
+    <button class="paircard" data-side="${side}" style="--cc:${cc(k)}">
+      <span class="code">${r.code} · ${esc(catById[r.cat].name)}</span>
+      <span class="v">${esc(r.vector)}</span>
+      <span class="d">${esc(r.desc.slice(0,160))}${r.desc.length>160?'…':''}</span>
+    </button>`; };
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">quick judgments · ${pairCount} this session</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">Which is more likely to bite an operator like you in the next year?</h1>
+  <p class="small muted">Comparisons beat absolute scores: they're fast, hard to grief, and thousands of them yield a robust likelihood ranking. No profile needed — just your gut, calibrated by experience.</p>
+  <div class="pairwrap">${card(a,'a')}<div class="pairvs">VS</div>${card(b,'b')}</div>
+  <div class="pairskip"><button class="btn small" id="pairskip">Can't say / not comparable — next pair</button></div>
+  <div class="pairresult" id="pairresult"></div>`;
+  app.querySelectorAll('.paircard').forEach(btn=>btn.addEventListener('click', ()=>{
+    addClaim({type:'pairwise', a:a.code, b:b.code, winner:btn.dataset.side});
+    pairCount++;
+    const rank = eloRanking(); const pos = Object.fromEntries(rank.map(([c],i)=>[c,i+1]));
+    const w = btn.dataset.side==='a'?a:b;
+    document.getElementById('pairresult').innerHTML =
+      `<div class="card" style="padding:12px 16px;display:flex;gap:14px;flex-wrap:wrap;align-items:baseline">
+        <span>✓ Counted. Crowd ranking now: <b class="mono">${a.code}</b> #${pos[a.code]} · <b class="mono">${b.code}</b> #${pos[b.code]} of ${ACTIVE.length}</span>
+        <span class="small muted">you picked ${w.code}</span></div>`;
+    newPair(); setTimeout(vPair, 650);
+  }));
+  document.getElementById('pairskip').addEventListener('click', ()=>{ newPair(); vPair(); });
+}
+
+/* ----- INCIDENT ----- */
+function riskSelectHTML(id, sel){
+  return `<select id="${id}">${CATS.map(c=>`<optgroup label="${esc(c.name)}">${ACTIVE.filter(r=>r.cat===c.id).map(r=>`<option value="${r.code}" ${sel===r.code?'selected':''}>${r.code} — ${esc(r.vector.slice(0,70))}</option>`).join('')}</optgroup>`).join('')}</select>`;
+}
+function vIncident(pre){
+  if(!profileComplete()) return needProfile('#/community/incident'+(pre?':'+pre:''));
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">incident / near-miss report</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">It happened. That's data.</h1>
+  <p class="lede small">One real incident is worth fifty opinions about probability. Setup details help others recognize themselves; keep it as anonymous as you like.</p>
+  <div class="card" style="padding:18px 20px;margin-top:14px">
+    <div class="formgrid">
+      <span class="f"><label>Which risk materialized?</label>${riskSelectHTML('inc-risk', pre)}</span>
+      <span class="f"><label>Year</label><input type="text" id="inc-year" placeholder="2025"></span>
+      <span class="f"><label>Outcome</label><select id="inc-outcome"><option>Near-miss</option><option>Loss — minor</option><option>Loss — major</option><option>Slashing event</option></select></span>
+    </div>
+    <div class="fullf"><label>Setup (one line)</label><input type="text" id="inc-setup" placeholder="e.g. solo home staker, 4 validators, Nethermind/Lighthouse, local keystores"></div>
+    <div class="fullf"><label>What happened — and what you changed</label><textarea id="inc-text" placeholder="What failed, how you noticed, what it cost, what you do differently now…"></textarea></div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn primary" id="inc-save">Submit report</button><span class="small muted" id="inc-msg"></span></div>
+  </div>`;
+  document.getElementById('inc-save').addEventListener('click', ()=>{
+    const text = document.getElementById('inc-text').value.trim();
+    if(text.length<20){ document.getElementById('inc-msg').textContent='A sentence or two, at least — the details are the value.'; return; }
+    const risk = document.getElementById('inc-risk').value;
+    addClaim({type:'incident', risk, year:document.getElementById('inc-year').value.trim()||'—',
+      outcome:document.getElementById('inc-outcome').value, setup:document.getElementById('inc-setup').value.trim(), text});
+    location.hash = '#/risks/'+risk;
+  });
+}
+
+/* ----- MITIGATION IDEA / TOOL REPORT ----- */
+function vIdea(pre){
+  if(!profileComplete()) return needProfile('#/community/idea:'+pre);
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">mitigation / tool claim</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">What works against it — or doesn't</h1>
+  <div class="card" style="padding:18px 20px;margin-top:14px">
+    <div class="formgrid">
+      <span class="f"><label>Against which risk?</label>${riskSelectHTML('idea-risk', pre)}</span>
+      <span class="f"><label>Claim type</label><select id="idea-kind">
+        <option value="practice">Practice that works</option>
+        <option value="counterexample">Counterexample — a listed mitigation backfires</option>
+        <option value="tool">Tool report</option></select></span>
+    </div>
+    <div class="formgrid" id="idea-toolrow" style="display:none">
+      <span class="f"><label>Tool name</label><input type="text" id="idea-toolname" placeholder="e.g. Vouch"></span>
+      <span class="f"><label>URL</label><input type="text" id="idea-toolurl" placeholder="https://…"></span>
+      <span class="f"><label>Verdict</label><select id="idea-verdict"><option value="works">Works for me</option><option value="footgun">Has a footgun</option></select></span>
+    </div>
+    <div class="fullf"><label>The claim</label><textarea id="idea-text" placeholder="Be specific: what you do, in what setup, and what it prevents — or exactly where the listed advice breaks down."></textarea></div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn primary" id="idea-save">Submit</button><span class="small muted" id="idea-msg"></span></div>
+  </div>`;
+  const kindSel = document.getElementById('idea-kind');
+  kindSel.addEventListener('change', ()=>{ document.getElementById('idea-toolrow').style.display = kindSel.value==='tool'?'grid':'none'; });
+  document.getElementById('idea-save').addEventListener('click', ()=>{
+    const text = document.getElementById('idea-text').value.trim();
+    if(text.length<15){ document.getElementById('idea-msg').textContent='Give it a sentence or two.'; return; }
+    const risk = document.getElementById('idea-risk').value;
+    if(kindSel.value==='tool'){
+      const name = document.getElementById('idea-toolname').value.trim();
+      if(!name){ document.getElementById('idea-msg').textContent='Tool name is required for a tool report.'; return; }
+      addClaim({type:'tool', risk, name, url:document.getElementById('idea-toolurl').value.trim(), verdict:document.getElementById('idea-verdict').value, note:text});
+    } else {
+      addClaim({type:'mitidea', risk, kind:kindSel.value, text});
+    }
+    location.hash = '#/risks/'+risk;
+  });
+}
+
+/* ----- PROPOSE NEW RISK ----- */
+function vSubmit(){
+  if(!profileComplete()) return needProfile('#/community/submit');
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">propose a new risk · gets ID ${nextCrId()}</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">What does the register miss?</h1>
+  <p class="lede small">Forced into the ValOS shape on purpose — category, group, one-sentence vector, description. As you type, the form checks all ${S.activeRisks} existing risks for likely duplicates. In the real version this opens a GitHub issue under your handle.</p>
+  <div class="card" style="padding:18px 20px;margin-top:14px">
+    <div class="formgrid">
+      <span class="f"><label>Category</label><select id="nr-cat">${CATS.map(c=>`<option value="${c.id}">${esc(c.name)} (${c.code})</option>`).join('')}</select></span>
+      <span class="f"><label>Risk group</label><select id="nr-group"><option>Process</option><option>Infrastructure</option><option>Software</option><option>People</option></select></span>
+    </div>
+    <div class="fullf"><label>Risk vector — one sentence, the failure mode itself</label><input type="text" id="nr-vector" placeholder="e.g. Expired TLS certificate on remote signer endpoint breaks signing silently"></div>
+    <div id="nr-sim"></div>
+    <div class="fullf"><label>Description — how it bites, and the consequence</label><textarea id="nr-desc" placeholder="Cause → mechanism → consequence. Write it like the existing entries: concrete enough that an operator recognizes their own setup in it."></textarea></div>
+    <div class="fullf"><label>Optional: did this happen to you? (attaches an incident report)</label><textarea id="nr-incident" placeholder="Leave empty if not."></textarea></div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn primary" id="nr-save">Submit draft</button><span class="small muted" id="nr-msg"></span></div>
+  </div>`;
+  const vec = document.getElementById('nr-vector'), desc = document.getElementById('nr-desc');
+  function checkSim(){
+    const sims = similar(vec.value+' '+desc.value);
+    document.getElementById('nr-sim').innerHTML = sims.length ? `<div class="simwarn"><b>Possible duplicates</b> — confirm yours is different, or add your knowledge to the existing risk instead:<br>${sims.map(({r})=>`<a href="#/risks/${r.code}"><b class="mono">${r.code}</b></a> ${esc(r.vector)}`).join('<br>')}</div>` : '';
+  }
+  vec.addEventListener('input', checkSim); desc.addEventListener('input', checkSim);
+  document.getElementById('nr-save').addEventListener('click', ()=>{
+    const v = vec.value.trim(), d = desc.value.trim();
+    if(v.length<15 || d.length<40){ document.getElementById('nr-msg').textContent = 'Vector needs a full sentence and the description some substance — that\u2019s what makes it reviewable.'; return; }
+    const id = nextCrId();
+    addClaim({type:'newrisk', id, status:'draft', cat:document.getElementById('nr-cat').value,
+      group:document.getElementById('nr-group').value, vector:v, desc:d});
+    const inc = document.getElementById('nr-incident').value.trim();
+    if(inc.length>15) addClaim({type:'incident', risk:id, year:'—', outcome:'Near-miss', setup:'', text:inc});
+    location.hash = '#/community/'+id;
+  });
+}
+
+/* ----- REVIEW QUEUE & DRAFT DETAIL ----- */
+function draftCardHTML(d){
+  const v = crVotes(d.id), cat = catById[d.cat];
+  const candidate = v.confirms.length>=3;
+  return `<div class="card" style="padding:15px 18px">
+    <div class="drafthead"><span class="crbadge">${d.id}</span>
+      <span class="chip" style="background:${ct(cat.code)};color:${cc(cat.code)}">${cat.code}</span>
+      <span class="pill">${esc(d.group)}</span>
+      <span class="pill" ${candidate?'style="border-color:var(--pass);color:var(--pass)"':''}>${candidate?'✓ candidate for editors':'draft · '+v.confirms.length+'/3 confirmations'}</span>
+      ${v.dups.length?`<span class="pill" style="border-color:var(--partial);color:var(--partial)">${v.dups.length} duplicate flag${v.dups.length===1?'':'s'}</span>`:''}
+      ${d.seed?'<span class="seedtag">demo</span>':'<span class="youtag">you</span>'}
+      <span class="small muted" style="margin-left:auto">by ${esc(d.by)}</span>
+    </div>
+    <p style="margin:9px 0 3px;font-weight:600;font-size:14.5px"><a href="#/community/${d.id}" style="color:var(--ink)">${esc(d.vector)}</a></p>
+    <p class="small" style="margin:0;color:var(--ink2)">${esc(d.desc)}</p>
+    <div class="votebtns" style="margin-top:11px" data-cr="${d.id}">
+      ${myVoted(d.id)?'<span class="pill">you voted on this</span>':`
+      <button class="btn small" data-vote="confirm">👍 Confirm — real and distinct</button>
+      <button class="btn small" data-vote="dup">⚠ Flag duplicate of…</button>
+      <select class="dupsel" style="display:none;border:1px solid var(--line);border-radius:7px;padding:5px;font-size:12px"><option value="">choose existing risk…</option>${ACTIVE.map(r=>`<option value="${r.code}">${r.code} — ${esc(r.vector.slice(0,55))}</option>`).join('')}</select>`}
+    </div>
+  </div>`;
+}
+function myVoted(id){ return myClaims().some(c=>c.type==='crvote'&&c.target===id); }
+function bindDraftVotes(rerender){
+  app.querySelectorAll('[data-cr]').forEach(box=>{
+    const id = box.dataset.cr;
+    box.querySelectorAll('[data-vote]').forEach(b=>b.addEventListener('click', ()=>{
+      if(!profileComplete()) return needProfile('#/community/queue');
+      if(b.dataset.vote==='confirm'){ addClaim({type:'crvote', target:id, v:'confirm'}); rerender(); }
+      else { const sel = box.querySelector('.dupsel'); sel.style.display='inline-block'; sel.focus();
+        sel.addEventListener('change', ()=>{ if(sel.value){ addClaim({type:'crvote', target:id, v:'dup', dupOf:sel.value}); rerender(); } }, {once:true});
+      }
+    }));
+  });
+}
+function vQueue(){
+  const drafts = communityRisks().slice().sort((a,b)=>crVotes(b.id).confirms.length - crVotes(a.id).confirms.length);
+  app.innerHTML = `
+  <a class="backlink" href="#/community">← Community</a>
+  <span class="eyebrow">review queue</span>
+  <h1 class="disp" style="font-size:clamp(22px,3vw,30px)">Proposed risks, awaiting the crowd</h1>
+  <p class="lede small">Confirmations and duplicate flags are claims too. Three confirmations promote a draft to <b>candidate</b> — in the real pipeline that's when editors triage it toward a spec PR.</p>
+  <div class="combar">${seedToggleHTML()}<label class="switch"><input type="checkbox" id="drafttoggle" ${ws.community.showDrafts?'checked':''}> Overlay drafts in the main risk register</label></div>
+  <div class="grid">${drafts.map(draftCardHTML).join('')||'<p class="muted">Queue is empty — propose the first one.</p>'}</div>`;
+  bindSeedToggle(vQueue);
+  document.getElementById('drafttoggle').addEventListener('change', e=>{ ws.community.showDrafts = e.target.checked; markDirty(); });
+  bindDraftVotes(vQueue);
+}
+function vDraftDetail(id){
+  const d = communityRisks().find(x=>x.id===id) || myClaims().find(x=>x.type==='newrisk'&&x.id===id);
+  if(!d){ app.innerHTML = `<a class="backlink" href="#/community/queue">← Review queue</a><p class="muted">Draft ${esc(id)} isn't visible — it may be demo data currently hidden by the toggle.</p>`; return; }
+  const incs = allClaims().filter(c=>c.type==='incident'&&c.risk===id);
+  app.innerHTML = `
+  <a class="backlink" href="#/community/queue">← Review queue</a>
+  ${draftCardHTML(d)}
+  ${incs.length?`<div class="card panel" style="margin-top:14px"><h2>Attached incident reports</h2>${incs.map(i=>`<div class="feeditem" style="margin-top:8px"><span class="who">${esc(i.by)}</span><span class="what">${esc(i.text)}</span>${i.seed?'<span class="seedtag">demo</span>':'<span class="youtag">you</span>'}</div>`).join('')}</div>`:''}
+  <div class="notebox" style="margin-top:14px">In the production pipeline: candidate drafts become GitHub issues on the spec repo; an accepted one is assigned the next stable ID in its category and ships in the following release with the proposer in the acknowledgments.</div>`;
+  bindDraftVotes(()=>vDraftDetail(id));
+}
+
+/* ----- risk-page community panel ----- */
+function communityPanelHTML(r){
+  const agg = aggRisk(r.code);
+  const incs = allClaims().filter(c=>c.type==='incident'&&c.risk===r.code);
+  const ideas = allClaims().filter(c=>(c.type==='mitidea'||c.type==='tool')&&c.risk===r.code);
+  return `<div class="card compane">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0;font-family:var(--disp);font-size:16px">Community signal</h2>
+      <span class="small muted">${agg.n} contributor${agg.n===1?'':'s'} ${agg.rpn?`· RPN <span class="rpnpill">${agg.rpn}</span>/125`:''}</span>
+    </div>
+    ${agg.n?`<div class="statbars">${DIMS.map(d=>{
+      const m=agg.dims[d.k].med, y=myEstimate(r.code,d.k);
+      return `<div class="statbar"><div class="l"><span>${d.s}</span><span>${m!=null?m:'–'}</span></div><div class="bar">${m!=null?`<i style="width:${(m/4)*100}%"></i>`:''}${y!=null?`<span class="you" style="left:${(y/4)*100}%" title="you: ${y}"></span>`:''}</div></div>`;
+    }).join('')}</div>`:'<p class="small muted" style="margin:8px 0 0">No estimates yet — be the first.</p>'}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:13px">
+      <a class="btn small primary" href="#/community/rate:${r.code}">Rate this risk</a>
+      <a class="btn small" href="#/community/incident:${r.code}">Report an incident</a>
+      <a class="btn small" href="#/community/idea:${r.code}">Suggest practice / tool</a>
+    </div>
+    ${incs.length?`<h2 style="margin:18px 0 4px;font-family:var(--disp);font-size:14.5px">Incidents & near-misses (${incs.length})</h2>${incs.map(i=>`<div class="feeditem" style="margin-top:7px"><span class="who">${esc(i.by)}</span><span class="what"><b>${esc(i.outcome)}</b>${i.setup?` · ${esc(i.setup)}`:''} · ${esc(i.year)}<br>${esc(i.text)}</span>${i.seed?'<span class="seedtag">demo</span>':'<span class="youtag">you</span>'}</div>`).join('')}`:''}
+    ${ideas.length?`<h2 style="margin:18px 0 4px;font-family:var(--disp);font-size:14.5px">Suggested practices & tools (${ideas.length})</h2>${ideas.map(i=>`<div class="feeditem" style="margin-top:7px"><span class="who">${esc(i.by)}</span><span class="what">${i.type==='tool'?`<b>${esc(i.name)}</b> <span class="pill" style="${i.verdict==='footgun'?'border-color:var(--partial);color:var(--partial)':'border-color:var(--pass);color:var(--pass)'}">${i.verdict}</span> — ${esc(i.note)}`:(i.kind==='counterexample'?'<span class="pill" style="border-color:var(--partial);color:var(--partial)">counterexample</span> ':'')+esc(i.text)}</span>${i.seed?'<span class="seedtag">demo</span>':'<span class="youtag">you</span>'}</div>`).join('')}`:''}
+  </div>`;
+}
+
+loadWS();
+
+/* drafts overlay for the main risk register */
+function draftOverlayHTML(){
+  const drafts = communityRisks();
+  if(!drafts.length) return '';
+  return `<div style="margin-top:20px"><span class="eyebrow">community drafts — proposed, not yet part of the standard</span>
+  <div class="risklist" style="margin-top:10px">${drafts.map(d=>{
+    const k = catById[d.cat].code, v = crVotes(d.id);
+    return `<a class="riskrow draftrow" style="--cc:${cc(k)}" href="#/community/${d.id}">
+      <span class="code">${d.id}</span>
+      <span><span class="vec">${esc(d.vector)}</span><span class="d">${esc(d.desc)}</span></span>
+      <span class="cov"><span class="crbadge">DRAFT</span><span>${v.confirms.length}/3 confirms</span></span></a>`;
+  }).join('')}</div></div>`;
+}
+
+route();
+</script>
+</body>
+</html>

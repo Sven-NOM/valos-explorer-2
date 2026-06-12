@@ -1,0 +1,5431 @@
+{
+ "meta": {
+  "title": "ValOS \u2014 Validator Operations Standard",
+  "org": "Lido Labs Foundation",
+  "license": "Apache 2",
+  "mitIntro": "This Mitigation Strategies section serves as a go-to resource for node operators, providing actionable insights and mitigation options to enhance the security, reliability, and efficiency of their operations. Most of the best practices that optimize up-time, access control and general stability directly apply to operating a node properly. However, for some risks specific to running a node operator, high levels of process segregation need to be achieved for mitigation to be effective.",
+  "ctlIntro": "This section contains controls that are material to Node Operator risks. Some of these control criteria correspond to similar controls from three common frameworks: * OWASP_TOP10 * ISO27001 * SOC2 Where relevant, corresponding controls from those frameworks are identified and linked from ValOS controls."
+ },
+ "categories": [
+  {
+   "id": "sec-risks-financial",
+   "name": "Financial and Regulatory Risk",
+   "intro": "These are risks explicitly arising from management of financial and regulatory compliance processes. (Many other risk categories have a direct financial impact).",
+   "code": "FIN"
+  },
+  {
+   "id": "sec-risks-slashing",
+   "name": "Slashing Risk",
+   "intro": "These risks arise from performing slashable actions, that lead to penalties. Note that frequent slashing penalties are likely to incur a reputational risk.",
+   "code": "SLS"
+  },
+  {
+   "id": "sec-risks-downtime",
+   "name": "Downtime Risk",
+   "intro": "These risks are due to connectivity issues. Depending on the network these can lead to reduced rewards, in effect an opportunity cost, or to more direct financial penalties.",
+   "code": "DOW"
+  },
+  {
+   "id": "sec-risks-keys",
+   "name": "Key Custody Risk",
+   "intro": "The risks associated with key custody cover all private keys and key material. However in some cases the way a risk manifests or impacts depends on the type of key. For example: - Validator Keys enable the operator to manage their nodes so compromises have a direct impact on operations, which is very likely to have a financial and reputational impact. - Withdrawal Keys enable the operator to manage their digital assets so compromises often have a direct financial impact, as well as a likely reputational impact.",
+   "code": "KEC"
+  },
+  {
+   "id": "sec-risks-hacking",
+   "name": "Hacking Risk",
+   "intro": "Many risks arise through vulnerability to hacking, whether carried out by a malicious external actor, or facilitated by a current or former member of the operational team.",
+   "code": "HCK"
+  },
+  {
+   "id": "sec-risks-infra",
+   "name": "General Infrastructure Risk",
+   "intro": "Risks related to process errors, inefficiencies, and weak general infrastructure. ID Risk Group Risk Vectors Risk Vector Description",
+   "code": "GIR"
+  },
+  {
+   "id": "sec-risks-partner",
+   "name": "Service Partner Specific Risk",
+   "intro": "Risk related to partners and specific third-party services.",
+   "code": "SPS"
+  },
+  {
+   "id": "sec-risks-reputation",
+   "name": "Reputational Risk",
+   "intro": "Risks that impact the reputation of a Node Operator, likely to lead potential and actual customers to choose a different partner to work with.",
+   "code": "RER"
+  }
+ ],
+ "risks": [
+  {
+   "id": "risk-fin-1",
+   "code": "FIN1",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Onboarding",
+   "desc": "Onboarded entities are not adequately vetted to ensure financial, operational, regulatory, or reputational appropriateness, resulting in potential financial, legal, or reputational damage"
+  },
+  {
+   "id": "risk-fin-2",
+   "code": "FIN2",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Deposit",
+   "desc": "Fiat and digital assets deposited are not received in the appropriate currency, address, or fiat account, leading to financial loss"
+  },
+  {
+   "id": "risk-fin-3",
+   "code": "FIN3",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Deposit",
+   "desc": "Fiat and digital assets are not correctly processed and assets are misallocated to individuals, entities, or operational addresses leading to financial loss"
+  },
+  {
+   "id": "risk-fin-4",
+   "code": "FIN4",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Withdrawal",
+   "desc": "Fiat and digital assets are not correctly disbursed to individuals, entities, or addresses, leading to financial and reputational loss"
+  },
+  {
+   "id": "risk-fin-5",
+   "code": "FIN5",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Compounding",
+   "desc": "Staking rewards are not appropriately collected, governed, restaked, compounded, or allocated to clients leading to financial loss"
+  },
+  {
+   "id": "risk-fin-6",
+   "code": "FIN6",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Reporting",
+   "desc": "Financial reporting requirements are not adhered to or inconsistently applied, leading to regulatory, legal, and financial consequences"
+  },
+  {
+   "id": "risk-fin-7",
+   "code": "FIN7",
+   "cat": "sec-risks-financial",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Up to date compliance",
+   "desc": "Failure to review relevant regulation and update compliance procedures leading to financial, legal, and regulatory repercussions"
+  },
+  {
+   "id": "risk-sls-1",
+   "code": "SLS1",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure: Single validator signs two different blocks",
+   "desc": "Single node signs two different blocks through failure in setting up the anti-slashing mechanism correctly (e.g. local anti-slashing database is disabled or has been deleted) or failure in the validator migration process."
+  },
+  {
+   "id": "risk-sls-2",
+   "code": "SLS2",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure: Shutting down validator only temporarily",
+   "desc": "Validator shuts down temporarily. System spins up a new validator with the same key"
+  },
+  {
+   "id": "risk-sls-3",
+   "code": "SLS3",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure: Validator keys are used on 2 different validators",
+   "desc": "System takes the same keys twice from the key database and deploys them on two different validators."
+  },
+  {
+   "id": "risk-sls-4",
+   "code": "SLS4",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure: Failure in setting up the anti-slashing mechanisms correctly",
+   "desc": "Failure in setting up the anti-slashing mechanisms correctly (e.g. Web3Signer has no slashing protection enabled, no database, database only in memory and not on disk, 2 or several copies of Web3Signer, slashing database can be deleted)"
+  },
+  {
+   "id": "risk-sls-5",
+   "code": "SLS5",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Double key usage in the CI/CD pipeline",
+   "desc": "Usage of same key within different environments causing a slashing"
+  },
+  {
+   "id": "risk-sls-6",
+   "code": "SLS6",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug (e.g. Validator Client) (Intentional or accidental) through update",
+   "desc": "New versions of a validator client that may cause errors that lead to slashingSupply chain attack"
+  },
+  {
+   "id": "risk-sls-7",
+   "code": "SLS7",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug (e.g. Validator Client) through software customization",
+   "desc": "New versions of a validator client has errors that lead to slashing"
+  },
+  {
+   "id": "risk-sls-8",
+   "code": "SLS8",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-1"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK1"
+  },
+  {
+   "id": "risk-sls-9",
+   "code": "SLS9",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-2"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK2"
+  },
+  {
+   "id": "risk-sls-10",
+   "code": "SLS10",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-3"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK3"
+  },
+  {
+   "id": "risk-sls-11",
+   "code": "SLS11",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-sls-12",
+   "code": "SLS12",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-sls-13",
+   "code": "SLS13",
+   "cat": "sec-risks-slashing",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-sls-14",
+   "code": "SLS14",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Operational Failure: Incorrect implementation of the failover mechanism: Failover system comes unexpectedly online",
+   "desc": "If the failover does not ensure that old system is not still alive in some way or is using a stale version of the anti-slashing database, e.g.: failover system starts accidentally although primary system is not down"
+  },
+  {
+   "id": "risk-sls-15",
+   "code": "SLS15",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Operational Failure: Incorrect implementation of the failover mechanism: Primary system comes unexpectedly back online",
+   "desc": "If the failover does not ensure that old system is not still alive in some way or is using a stale version of the anti-slashing database, e.g.: failover system starts (manually / automatically) because primary system is down and primary system comes back online"
+  },
+  {
+   "id": "risk-sls-16",
+   "code": "SLS16",
+   "cat": "sec-risks-slashing",
+   "status": "removed",
+   "replacedBy": [],
+   "group": "",
+   "vector": "",
+   "desc": "Removed"
+  },
+  {
+   "id": "risk-sls-17",
+   "code": "SLS17",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Operational Failure: Slashing monitoring ignores alerts",
+   "desc": "Slashing events continue or recur because alerts are not monitored"
+  },
+  {
+   "id": "risk-sls-18",
+   "code": "SLS18",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Operational Failure: Slashing monitoring does not shut down the validators",
+   "desc": "Slashing continues because monitoring system fails to automatically shut down malfunctioning validator"
+  },
+  {
+   "id": "risk-sls-19",
+   "code": "SLS19",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Incident Response does not update Slashing Database",
+   "desc": "A slashing event recurs, because the database is not updated as part of Incident Response"
+  },
+  {
+   "id": "risk-sls-20",
+   "code": "SLS20",
+   "cat": "sec-risks-slashing",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Chainsplit increases slashing penalty",
+   "desc": "After a chainsplit occurs, continuing to support the leading fork can lead to a larger penalty if it is later rejected"
+  },
+  {
+   "id": "risk-dow-1",
+   "code": "DOW1",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "External: Operational Failure of Cloud Service Provider",
+   "desc": "Cloud Downtime, malfunction"
+  },
+  {
+   "id": "risk-dow-2",
+   "code": "DOW2",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure of own bare metal set-up due to malfunction software",
+   "desc": "Malfunction of software (e.g. validator client or third party software) leads to downtime"
+  },
+  {
+   "id": "risk-dow-3",
+   "code": "DOW3",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Operational Failure of own bare metal set-up due to malfunction hardware",
+   "desc": "Malfunction of hardware (e.g. physical network, computer system, CPU, RAM) leads to downtime"
+  },
+  {
+   "id": "risk-dow-4",
+   "code": "DOW4",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "External: Operational Failure of own bare metal set-up due to people (ManMade)",
+   "desc": "Employees are responsible for the downtime event (accidentally or intentionally)"
+  },
+  {
+   "id": "risk-dow-5",
+   "code": "DOW5",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "External: Operational Failure of own bare metal set-up due to natural causes",
+   "desc": "A natural event (e.g. earthquake, flood, hurricane,...) leads to an downtime"
+  },
+  {
+   "id": "risk-dow-6",
+   "code": "DOW6",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Failure to design for high availability",
+   "desc": "Having too few beacon nodes relative to validator clients, leading to:- opportunity costs- slashing on some networks"
+  },
+  {
+   "id": "risk-dow-7",
+   "code": "DOW7",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "External: Internet connectivity",
+   "desc": "Loss of infrastructure network connection due to:- Sudden cloud outage- Sudden internet failure in on-premise machines- Accidental firewall change locks out access."
+  },
+  {
+   "id": "risk-dow-8",
+   "code": "DOW8",
+   "cat": "sec-risks-downtime",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-dow-9"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "This risk has been merged into DOW9"
+  },
+  {
+   "id": "risk-dow-9",
+   "code": "DOW9",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Power supply",
+   "desc": "Volatile power supply damages infrastructure or causes system downtime"
+  },
+  {
+   "id": "risk-dow-10",
+   "code": "DOW10",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "External: DDOS attack",
+   "desc": "Systems unresponsive, slowed down, and compromized"
+  },
+  {
+   "id": "risk-dow-11",
+   "code": "DOW11",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug in the Validator Client",
+   "desc": "Downtime or accidental interpretation of dishonest behavior"
+  },
+  {
+   "id": "risk-dow-12",
+   "code": "DOW12",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug in the Validator Client (Intentional or accidental) through software update",
+   "desc": "New versions of a validator client that may cause errors that lead to downtime(Supply chain attack)"
+  },
+  {
+   "id": "risk-dow-13",
+   "code": "DOW13",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug in the Validator Client through software customization",
+   "desc": "New versions of a validator client may cause errors that lead to downtime"
+  },
+  {
+   "id": "risk-dow-14",
+   "code": "DOW14",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Software Bug in third party software",
+   "desc": "Third party software failure can lead to downtime of the whole system"
+  },
+  {
+   "id": "risk-dow-15",
+   "code": "DOW15",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Latency / Failure of relays",
+   "desc": "Latency / Failure of relays"
+  },
+  {
+   "id": "risk-dow-16",
+   "code": "DOW16",
+   "cat": "sec-risks-downtime",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-2"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK2"
+  },
+  {
+   "id": "risk-dow-17",
+   "code": "DOW17",
+   "cat": "sec-risks-downtime",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-3"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK3"
+  },
+  {
+   "id": "risk-dow-18",
+   "code": "DOW18",
+   "cat": "sec-risks-downtime",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-dow-19",
+   "code": "DOW19",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Running outdated validator software",
+   "desc": "The node operator os not updating its validator software"
+  },
+  {
+   "id": "risk-dow-20",
+   "code": "DOW20",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Validator client update incompatible with IT system",
+   "desc": "System downtime after validator client update caused by incompatibility"
+  },
+  {
+   "id": "risk-dow-21",
+   "code": "DOW21",
+   "cat": "sec-risks-downtime",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Updates take too long",
+   "desc": "System downtime caused by software update processes taking longer than planned, with no failover capacity"
+  },
+  {
+   "id": "risk-kec-1",
+   "code": "KEC1",
+   "cat": "sec-risks-keys",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Failure to use vault system",
+   "desc": "No audit trail and controlled access to secrets"
+  },
+  {
+   "id": "risk-kec-2",
+   "code": "KEC2",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-1",
+    "risk-hck-2"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK1, HCK2"
+  },
+  {
+   "id": "risk-kec-3",
+   "code": "KEC3",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-1",
+    "risk-hck-2"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK1, HCK2"
+  },
+  {
+   "id": "risk-kec-4",
+   "code": "KEC4",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-kec-5",
+   "code": "KEC5",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-kec-6",
+   "code": "KEC6",
+   "cat": "sec-risks-keys",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Loss of Signing Keys (Operational Failure)",
+   "desc": "Signing keys are lost in an operational process"
+  },
+  {
+   "id": "risk-kec-7",
+   "code": "KEC7",
+   "cat": "sec-risks-keys",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Privilege escalation mechanisms not prevented",
+   "desc": "Someone with access to one service/node can increase their privileges and do more harm on further nodes."
+  },
+  {
+   "id": "risk-kec-8",
+   "code": "KEC8",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-6"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK6"
+  },
+  {
+   "id": "risk-kec-9",
+   "code": "KEC9",
+   "cat": "sec-risks-keys",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Loss of Withdrawal Keys (Operational Failure)",
+   "desc": "Loss of Withdrawal Keys (Operational Failure)"
+  },
+  {
+   "id": "risk-kec-10",
+   "code": "KEC10",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-1",
+    "risk-hck-2"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK1, HCK2"
+  },
+  {
+   "id": "risk-kec-11",
+   "code": "KEC11",
+   "cat": "sec-risks-keys",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-hck-1",
+   "code": "HCK1",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "SLS8",
+    "KEC2",
+    "KEC3",
+    "KEC10"
+   ],
+   "group": "People",
+   "vector": "Malicious Internal Employee intentionally causes operational failure with appropriate user rights",
+   "desc": "Anything that an internal employee has access to is at risk of being exploited to sabotage the operation resulting in a slashing incident."
+  },
+  {
+   "id": "risk-hck-2",
+   "code": "HCK2",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "SLS9",
+    "DOW16",
+    "KEC2",
+    "KEC3",
+    "KEC10",
+    "GIR2"
+   ],
+   "group": "People",
+   "vector": "Malicious Internal Employee intentionally causes operational failure via privilege escalation",
+   "desc": "A malicious internal employee can get additional rights via through privileges escalation."
+  },
+  {
+   "id": "risk-hck-3",
+   "code": "HCK3",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "SLS10",
+    "DOW17",
+    "GIR2",
+    "GIR5"
+   ],
+   "group": "People",
+   "vector": "Malicious Ex-Employee intentionally causes an operational failure",
+   "desc": "A former employee whose access is not blocked or removed"
+  },
+  {
+   "id": "risk-hck-4",
+   "code": "HCK4",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "SLS11",
+    "SLS12",
+    "SLS13",
+    "DOW18",
+    "KEC4",
+    "KEC5",
+    "KEC11",
+    "GIR1"
+   ],
+   "group": "People",
+   "vector": "Malicious External Hacker intentionally causes operational failure",
+   "desc": "Malicious External Hacker gets system access through absence of or weak cyber security standards"
+  },
+  {
+   "id": "risk-hck-5",
+   "code": "HCK5",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "GIR8"
+   ],
+   "group": "Process",
+   "vector": "No Input validation",
+   "desc": "Attacks induce buffer overflow, DoS, code injection, etc."
+  },
+  {
+   "id": "risk-hck-6",
+   "code": "HCK6",
+   "cat": "sec-risks-hacking",
+   "status": "active",
+   "replaces": [
+    "KEC8"
+   ],
+   "group": "Infrastructure",
+   "vector": "Failure to protect infrastructure against physical access",
+   "desc": "Someone who gains physical access to a server can have access to locally exposed ports and can access the software API"
+  },
+  {
+   "id": "risk-gir-1",
+   "code": "GIR1",
+   "cat": "sec-risks-infra",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-4"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK4"
+  },
+  {
+   "id": "risk-gir-2",
+   "code": "GIR2",
+   "cat": "sec-risks-infra",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-2",
+    "risk-hck-3"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK2, HCK3"
+  },
+  {
+   "id": "risk-gir-3",
+   "code": "GIR3",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Fix versions on every deploy",
+   "desc": "Downtime if a system needs to be just re-started if newest version is accidentally pulled"
+  },
+  {
+   "id": "risk-gir-4",
+   "code": "GIR4",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Insufficient monitoring/logging",
+   "desc": "- Inability to learn from incidents- Late detection of incidents- insufficient automation to react to incidents"
+  },
+  {
+   "id": "risk-gir-5",
+   "code": "GIR5",
+   "cat": "sec-risks-infra",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-3"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK3"
+  },
+  {
+   "id": "risk-gir-6",
+   "code": "GIR6",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "No password rotation",
+   "desc": "- Leak of passwords- brute force"
+  },
+  {
+   "id": "risk-gir-7",
+   "code": "GIR7",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Use of direct auth",
+   "desc": "Authentication information does not expire timely and can be used later."
+  },
+  {
+   "id": "risk-gir-8",
+   "code": "GIR8",
+   "cat": "sec-risks-infra",
+   "status": "replaced",
+   "replacedBy": [
+    "risk-hck-5"
+   ],
+   "group": "",
+   "vector": "",
+   "desc": "Replaced by HCK5"
+  },
+  {
+   "id": "risk-gir-9",
+   "code": "GIR9",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Failure to properly perform network segmentation",
+   "desc": "Having containers or nodes accessible from any IP addresses increases the attack vector enormously"
+  },
+  {
+   "id": "risk-gir-10",
+   "code": "GIR10",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Lack of encrypted traffic between services and deployment scripts",
+   "desc": "Anyone on the network can sniff out packages with secrets included, and may be able to steal passwords and tokens in this way"
+  },
+  {
+   "id": "risk-gir-11",
+   "code": "GIR11",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "No separate tests and staging environments",
+   "desc": "Improper change management and testing of software updates \"in production\""
+  },
+  {
+   "id": "risk-gir-13",
+   "code": "GIR13",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "High Blast radius of software bug in overall system",
+   "desc": "A small error affects the whole system and all clients right away, instead of being caught early with limited effect on the whole system."
+  },
+  {
+   "id": "risk-gir-14",
+   "code": "GIR14",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Low Infrastructure provider security",
+   "desc": "Hacks through the apis of the infrastructure provider"
+  },
+  {
+   "id": "risk-gir-15",
+   "code": "GIR15",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "CVE Monitoring",
+   "desc": "Attack on the system suddenly possible once published"
+  },
+  {
+   "id": "risk-gir-16",
+   "code": "GIR16",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "People",
+   "vector": "Human error",
+   "desc": "Anything a human can touch can go wrong"
+  },
+  {
+   "id": "risk-gir-17",
+   "code": "GIR17",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Use of non-hardened images",
+   "desc": "Attack on the system using the weakest link of a given node/container"
+  },
+  {
+   "id": "risk-gir-18",
+   "code": "GIR18",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Insufficient change management mechanisms in place",
+   "desc": "- Downtime on update- Slow down in reaction time to incident"
+  },
+  {
+   "id": "risk-gir-19",
+   "code": "GIR19",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Lack of automation for deployment",
+   "desc": "- Downtime on update- Slow down in reaction time to incident"
+  },
+  {
+   "id": "risk-gir-20",
+   "code": "GIR20",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Lack of testing (software and infrastructure)",
+   "desc": "- Downtime on update- Slow down in reaction time to incident"
+  },
+  {
+   "id": "risk-gir-21",
+   "code": "GIR21",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Lack of enforced code review",
+   "desc": "- Downtime on update- Slow down in reaction time to incident"
+  },
+  {
+   "id": "risk-gir-22",
+   "code": "GIR22",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Lack of Security training (password hygiene, phishing attacks, ...)",
+   "desc": "Employees spill secrets"
+  },
+  {
+   "id": "risk-gir-23",
+   "code": "GIR23",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Make-shift container orchestration procedures",
+   "desc": "Failure when e.g. failover is actually needed to be performed"
+  },
+  {
+   "id": "risk-gir-24",
+   "code": "GIR24",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "Software",
+   "vector": "Third party software and vendors",
+   "desc": "Suboptimal third-party software practices"
+  },
+  {
+   "id": "risk-gir-25",
+   "code": "GIR25",
+   "cat": "sec-risks-infra",
+   "status": "active",
+   "replaces": [],
+   "group": "People",
+   "vector": "Centralized knowledge",
+   "desc": "If the infrastructure knowledge is not shared across the team, this could lead to a heavy dependency on a single person"
+  },
+  {
+   "id": "risk-sps-0",
+   "code": "SPS0",
+   "cat": "sec-risks-partner",
+   "status": "active",
+   "replaces": [],
+   "group": "Counterparty",
+   "vector": "General Counterparty Risk",
+   "desc": "Whenever a service is provided by a third party, the relevant risks are run by the third party, but in most case at least some and often the bulk of the consequences for a failure will be borne by the node operator."
+  },
+  {
+   "id": "risk-sps-1",
+   "code": "SPS1",
+   "cat": "sec-risks-partner",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Exit Risk - Delinquent state",
+   "desc": "No new stake will be allocated to the Node Operator (happens automatically)the daily rewards sent to the Node Operator will be halved (with the remaining half sent towards that day\u2019s rebase) (happens automatically)reduced rewards will continue for the duration of a cooldown period long enough to determine whether, immediately after service restoration by the Node Operator, subsequently received validator exit requests are processed in a timely manner."
+  },
+  {
+   "id": "risk-rer-1",
+   "code": "RER1",
+   "cat": "sec-risks-reputation",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Mismanagement during incident",
+   "desc": "Reputation damage due to mismanagement of slashing, downtime or access loss to keys"
+  },
+  {
+   "id": "risk-rer-2",
+   "code": "RER2",
+   "cat": "sec-risks-reputation",
+   "status": "active",
+   "replaces": [],
+   "group": "People",
+   "vector": "Negative appearance in public",
+   "desc": "Damage to reputation due to bad behavior in public"
+  },
+  {
+   "id": "risk-rer-3",
+   "code": "RER3",
+   "cat": "sec-risks-reputation",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Mismanagement of Post-Incident",
+   "desc": "Reputation damage due to mismanagement of Post-slashing, -downtime or access loss to keys"
+  },
+  {
+   "id": "risk-rer-4",
+   "code": "RER4",
+   "cat": "sec-risks-reputation",
+   "status": "active",
+   "replaces": [],
+   "group": "Infrastructure",
+   "vector": "Withdrawal",
+   "desc": "Staking withdrawal requests cannot be met efficiently, leading to delays in payment processing causing reputational loss"
+  },
+  {
+   "id": "risk-rer-5",
+   "code": "RER5",
+   "cat": "sec-risks-reputation",
+   "status": "active",
+   "replaces": [],
+   "group": "Process",
+   "vector": "Poor Communication",
+   "desc": "Poor reputation or reputational damage due to insufficient operational communication and overall transparency"
+  }
+ ],
+ "mitGroups": [
+  {
+   "id": "sec-mitigations-risk-management",
+   "name": "Risk Management",
+   "intro": [
+    {
+     "t": "p",
+     "x": "A core principle for mitigating risks is to actively identify and manage the risks. This means understanding the particular risks, the likelihood of something going wrong, and the likely impact if that does occur. That information enables a Node Operator to decide what level of risk is reasonable and how to prioritise available resources to mitigate risk."
+    },
+    {
+     "t": "p",
+     "x": "Risk management decisions need to take into account any regulation that obliges a Node Operator to meet specific benchmarks or implement specific mitigation strategies or other activities."
+    },
+    {
+     "t": "p",
+     "x": "A first step for effective risk management is to document the potential risks, as well as the tools and processes currently in place to address those risks."
+    },
+    {
+     "t": "p",
+     "x": "Documentation needs to include an assessment of the relevant risks, an explanation of what level of risk is acceptable and why, and how each process or infrastructure component contributes to and protects against risks."
+    },
+    {
+     "t": "p",
+     "x": "This enables Node Operators to identify activities that are not contributing to the business, or that actually increase the potential risks they face. The accuracy, availability and completeness of this information is of crucial import."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-manage-people",
+   "name": "People Management",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Unless a validator system is immutable and fully automated, there will be people involved in managing it. It is therefore important that appropriate management of people is part of managing the validator node. This impacts in various areas, from mitigating the risk of hacking by unknown parties with access to privileged roles, to the ability to provide timely incident response and minimize the damage caused by a security incident."
+    },
+    {
+     "t": "p",
+     "x": "As well as the Controls for People Management some relevant controls are grouped with other areas, such as"
+    },
+    {
+     "t": "b",
+     "x": "Limit Physical Access"
+    },
+    {
+     "t": "b",
+     "x": "Minimize Authorization"
+    },
+    {
+     "t": "b",
+     "x": "Log Personnel Information"
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-tech-stack",
+   "name": "Technology Stack",
+   "intro": [
+    {
+     "t": "p",
+     "x": "In a nutshell: technology needs to serve the business goal, not the other way around."
+    },
+    {
+     "t": "p",
+     "x": "To ensure this happens, it is important to consider both the business goals and the available technology, and then use appropriate technology to meet those goals."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-secret-management",
+   "name": "Information and Secret Management",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Information management can mitigate many risks. One aspect is the management of highly confidential information, such as the management of signing keys or withdrawal keys, but it is also important to manage operational information."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-access-management",
+   "name": "Access Controls and Access Management",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Access Control covers physical access to devices and facilities, the ability to connect to servers through networks, and the ability to perform specific tasks, such as getting answers to requests."
+    },
+    {
+     "t": "p",
+     "x": "The core principle to follow in granting authorization is Least Privilege. This is generally achieved by using some form of Role-Based Access Control, in combination with an inventory of assets and services, to ensure that only those who need access are granted that access, and that it is revoked as soon as appropriate."
+    },
+    {
+     "t": "p",
+     "x": "Tracking this information is important to ensure that access can be audited and verified."
+    }
+   ],
+   "risks": [
+    "DOW16",
+    "DOW7",
+    "FIN1",
+    "GIR1",
+    "GIR16",
+    "GIR22",
+    "GIR7",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "KEC2",
+    "KEC4",
+    "SPS0"
+   ],
+   "all": false,
+   "tools": [
+    {
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html",
+     "name": "AWS IAM"
+    },
+    {
+     "url": "https://github.com/attestantio/dirk",
+     "name": "Dirk"
+    },
+    {
+     "url": "https://docs.web3signer.consensys.net",
+     "name": "Web3Signer"
+    }
+   ]
+  },
+  {
+   "id": "sec-mitigations-environment",
+   "name": "Managing Hardware",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Physical devices are subject to physical changes, including environmental issues such as temperature extremes that can cause damage, and utility failures such as power or internet failure."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-development-and-updates",
+   "name": "Software Development and Update Process",
+   "intro": [],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-manage-updates",
+   "name": "Manage Software Updates",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Updating software is a major risk vector. Good processes for software development and managing the deployment of updates are important to mitigate some of this risk. As well as having control over the update process, it is important to have the capacity to revert to a known environment in an emergency where an update has been found to introduce unexpected problems."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-monitoring",
+   "name": "Monitoring, Logging and Alerting",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Monitoring is an important tool to identify risks and gain relevant data, and some requirement for it is a very common feature of compliance and security frameworks."
+    },
+    {
+     "t": "p",
+     "x": "Monitoring takes many forms. It can be done internally, and provided as a service. The latter is especially common for monitoring the health of widely available third-party infrastructure such as blockchains, and cloud services."
+    },
+    {
+     "t": "p",
+     "x": "Monitoring can take place throughout the ecosystem. Low-level indicators such as whether network traffic is within expected or design parameters, whether databases are being updated at expected rates, or whether server facilities are maintaining an appropriate temperature are all examples of monitoring with fairly obvious value, and where immediate remediations or further investigation is straightforward."
+    },
+    {
+     "t": "p",
+     "x": "Monitoring access to physical infrastructure is more complex, and the resulting information about people is subject to privacy requirements, but can be a useful diagnostic tool if something goes very wrong, or if you just want to know who keeps blocking the server-room door open on warm days."
+    },
+    {
+     "t": "p",
+     "x": "As well as monitoring in real time, logging information allows analysis to discover information that is only observable though variations (or non-variations) in specific monitored information over time."
+    },
+    {
+     "t": "p",
+     "x": "Given the importance of logged information, and of privacy requirements, best practice is to have a clearly documented policy for record retention. This needs to retain enough information to enable historical analysis and comparison. Some data are best only retained in anonymized form, or stored with extra security provisions applied."
+    },
+    {
+     "t": "p",
+     "x": "A good monitoring system provides very broad coverage, with redundancy both as an aspect that can be monitored to detect anomalies and to eliminate the risk of a single point of failure - when monitoring is compromised it can indicate a simple failure of the monitoring system, but can also mask a broader issue that the system is expected to detect."
+    },
+    {
+     "t": "p",
+     "x": "With a good monitoring system in place providing broad coverage of operations, there needs to be useful and targeted alerting system based on the monitoring system."
+    },
+    {
+     "t": "p",
+     "x": "To learn that a potential problem has been identified, as soon as possible, and act on it effectively, a monitoring system needs a robust targeted alerting system. A system that overloads its watchers with alerts is likely to lead to alert fatigue, where the alerts are ignored in practice because too often they require an onerous human response when they are not identifying a real problem. Like monitoring systems in general, redundancy in alert systems is important."
+    },
+    {
+     "t": "p",
+     "x": "Knowing an incident has occurred can trigger an Incident Response Plan, but if it relies on individuals, it is important to provide 24/7 response. Many attacks are deliberately targeted for times when responders are less likely to have high availability."
+    },
+    {
+     "t": "p",
+     "x": "Alert systems can in turn drive automated emergency responses, ranging from capture of increased levels of detail, through requesting additional authorization beyond the normal requirements, to full system shutdowns."
+    },
+    {
+     "t": "p",
+     "x": "Here again, there are important trade-offs between ensuring a highly responsive system, and one that is robust in the face of real-world variability. For example, a system that can automatically suspend multi-sig transactions unless they are authorized within a short time is not always appropriate, because it can interfere with normal operations over a high-latency network or where a number of individuals are expected to coordinate extensively, taking a significant amount of time, before authorizing a particular action."
+    },
+    {
+     "t": "p",
+     "x": "Among many aspects of Validator Operations to monitor directly are the following:"
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  },
+  {
+   "id": "sec-mitigations-incident-response",
+   "name": "Communications and Incident Response",
+   "intro": [
+    {
+     "t": "p",
+     "x": "Communication is important both during normal operations, and when an exceptional security incident occurs that could adversely affect the normal operations, or the users of a system."
+    },
+    {
+     "t": "p",
+     "x": "There are therefore two core parts to a Nore Operator's communication strategy:"
+    },
+    {
+     "t": "b",
+     "x": "Normal Operational Communication provides information about ongoing operations, to ensure confidence in and transparency of everyday operations."
+    },
+    {
+     "t": "b",
+     "x": "Incident Communication is the collection of communications processes that occur as part of an Incident Response Plan"
+    },
+    {
+     "t": "p",
+     "x": "Developing appropriate communication procedures relies on understanding both the communications channels an organisation has or can have, and its stakeholders. The goal is to ensure those stakeholders have timely access to relevant information in a useful format."
+    }
+   ],
+   "risks": [],
+   "all": false,
+   "tools": []
+  }
+ ],
+ "mitigations": [
+  {
+   "id": "sec-mit-assess-risk",
+   "name": "Assessing risks",
+   "group": "sec-mitigations-risk-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "A common industry approach to assessing risks is to consider the probability of an event occurring and the likely impact of that event."
+    },
+    {
+     "t": "p",
+     "x": "If these are ranked on a linear numerical scale (e.g. probability between 0 and 1), and an approximate overall financial impact, they can be multiplied, provide a simple initial ranking for priority of mitigating each risk."
+    },
+    {
+     "t": "p",
+     "x": "Since the cost of risk mitigation varies considerably, the overall priority for addressing risk, or deciding that a given level of risk is acceptable, generally depends on comparing the risk ranking with the cost of mitigation, and available resources."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for assessing risk include"
+    },
+    {
+     "t": "b",
+     "x": "Identify relevant staff and others responsible for identifying, assessing, and determining how to manage risks"
+    },
+    {
+     "t": "b",
+     "x": "Ensure that every service, where possible, is configuration hardened. Common benchmarks such as CIS provide helpful guidance."
+    },
+    {
+     "t": "b",
+     "x": "Analyze each infrastructure component's security, availability, processing integrity, confidentiality and privacy."
+    },
+    {
+     "t": "b",
+     "x": "Creation and continuous analysis of a Software Bill of Materials SBOM."
+    }
+   ],
+   "tools": [],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "sec-mitigating-assess-risk-impact",
+   "name": "Assessing Financial Impact",
+   "group": "sec-mitigations-risk-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "There are a number of factors to take into account when assessing the overall financial impact of a given risk, with the direct cost incurred as the most obvious. It is important to understand the time required to mitigate the impact of an event, and the cost that will be incurred over that time."
+    },
+    {
+     "t": "p",
+     "x": "An incident can incur a variety of costs in terms of employee time spent managing the incident, communication, and follow-up, new mitigations implemented to mitigate concrete or reputational damage such as replacement or additional infrastructure, as well as potential costs of compensation or legal costs."
+    },
+    {
+     "t": "p",
+     "x": "It is also useful to consider opportunity costs such as competitors taking advantage of an incident to promote themselves as a better alternative."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://portal.llamarisk.com/penalty/slashing",
+     "name": "Validator Penalty Simulator"
+    }
+   ],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "sec-mitigating-assess-risk-probability",
+   "name": "Assessing Incident Probability",
+   "group": "sec-mitigations-risk-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Predicting the likelihood of an unexpected future event is generally difficult, and results are unlikely to precisely match the predictions. Nevertheless it is important to consider the context of a specific operation and attempt useful predictions."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for assessing incident probability include"
+    },
+    {
+     "t": "b",
+     "x": "Analyzing historical data to understand past trends and incidents (external, internal incidents, and near-miss incidents)"
+    },
+    {
+     "t": "b",
+     "x": "Reviewing industry reports for insights into common risks and their fiscal consequences in similar scenarios"
+    },
+    {
+     "t": "b",
+     "x": "Consulting with experts in the field to gain a comprehensive perspective on risk probabilities and impacts"
+    },
+    {
+     "t": "b",
+     "x": "Using risk assessment tools or software for a more data-driven analysis"
+    }
+   ],
+   "tools": [],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "sec-mit-identified-individuals",
+   "name": "Identified Individuals",
+   "group": "sec-mitigations-manage-people",
+   "body": [
+    {
+     "t": "p",
+     "x": "It is important to identify individuals who have access to and can control aspects of the operations of the Validator node. While a globalized workforce can provide multiple benefits, it is difficult to hold an anonymous individual accountable. This fact is repeatedly used by large-scale hacking operations to infiltrate valuable targets with a goal of eventually using access granted willingly to rob, damage, or destroy the target."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "FIN1",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "KEC7",
+    "RER2",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-training",
+   "name": "Training",
+   "group": "sec-mitigations-manage-people",
+   "body": [
+    {
+     "t": "p",
+     "x": "It is important that individuals whose actions influence the Validator node have appropriate skills, and as the ecosystem evolves training helps maintain a relevant skillset."
+    },
+    {
+     "t": "p",
+     "x": "As well as themes specific to the individuals' tasks and Node Operator internal policies (such as this document), there are a number of areas where up-to-date skills matter, such as:"
+    },
+    {
+     "t": "b",
+     "x": "Security practices, including protection from social engineering attacks such as phishing"
+    },
+    {
+     "t": "b",
+     "x": "Relevant regulatory requirements, a broad topic possibly including privacy, anti-bribery, conflict of interest, and more"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW21",
+    "FIN1",
+    "FIN7",
+    "GIR16",
+    "GIR22",
+    "GIR25",
+    "RER2",
+    "SLS17"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-update-software",
+   "name": "Update Third-party Software",
+   "group": "sec-mitigations-tech-stack",
+   "body": [
+    {
+     "t": "p",
+     "x": "Updates to software components provided by third-parties often address newly-discovered or longstanding vulnerabilities. It is a best practice to update software regularly, but it is important to check for vulnerabilities that can be introduced by an upgrade as part of a supply-chain attack, and to verify that any customisation of open-source software, or specific configuration options, as well as other software used by the node operator, are all compatible with an update and do not create new vulnerabilities on updating."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for updating software include"
+    },
+    {
+     "t": "b",
+     "x": "\"version-pinning\""
+    },
+    {
+     "t": "b",
+     "x": "actively managing dependencies"
+    },
+    {
+     "t": "b",
+     "x": "testing updates before automatically deploying them"
+    },
+    {
+     "t": "h",
+     "x": "Relevant controls for updated software"
+    },
+    {
+     "t": "b",
+     "x": "Controls for Development and Update"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW12",
+    "DOW21",
+    "DOW4",
+    "FIN1",
+    "GIR16",
+    "GIR18",
+    "GIR21",
+    "GIR22",
+    "GIR25",
+    "GIR4",
+    "GIR6",
+    "KEC6",
+    "KEC9",
+    "RER1",
+    "RER2",
+    "RER3",
+    "RER4",
+    "RER5",
+    "SLS1",
+    "SLS2",
+    "SLS3",
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-antislash-db",
+   "name": "Local Anti-Slashing Database",
+   "group": "sec-mitigations-tech-stack",
+   "body": [
+    {
+     "t": "p",
+     "x": "To avoid double signing, validators can maintain a history of messages they signed. This data is crucial, as inconsistencies can cause a double-signing event. The data needs to be reliably persistent, and properly connected to the systems that use it."
+    },
+    {
+     "t": "p",
+     "x": "A common format for anti-slashing data is defined by EIP3076."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://lighthouse-book.sigmaprime.io/validator_slashing_protection.html",
+     "name": "Lighthouse"
+    },
+    {
+     "url": "https://chainsafe.github.io/lodestar/run/validator-management/validator-cli/#validator-slashing-protection-export",
+     "name": "Lodestar"
+    },
+    {
+     "url": "https://nimbus.guide/migration.html#2-export-slashing-protection-history",
+     "name": "Nimbus"
+    },
+    {
+     "url": "https://prysm.offchainlabs.com/docs/backup-and-migration/slashing-protection/#exporting-your-validators-slashing-protection-history",
+     "name": "Prysm"
+    },
+    {
+     "url": "https://docs.teku.consensys.io/how-to/prevent-slashing#export-a-slashing-protection-file",
+     "name": "Teku"
+    }
+   ],
+   "risks": [
+    "SLS1",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS2",
+    "SLS3",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-signature-management",
+   "name": "Signature Management",
+   "group": "sec-mitigations-tech-stack",
+   "body": [
+    {
+     "t": "p",
+     "x": "Tools that manage signatures for transactions generally provide a workflow that includes passive and active protection against a variety of risks. Using these tools helps minimise the chances that a signature is given without checking what is being signed, and that risk-bearing transactions require appropriate authorization."
+    },
+    {
+     "t": "p",
+     "x": "Properly configured signature management tools also provide the ability to recover, or mitigate any problems, in the case where a transaction was not completed."
+    },
+    {
+     "t": "p",
+     "x": "As well as the use of various kind of \"multi-sig\", which can include simple requirements for multiple signatures, or incorporate such techniques as multi-part compute (\"MPC\") or the like, signature management tools can include automated verification steps in the process of authorizing a transaction."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://github.com/attestantio/dirk",
+     "name": "Dirk"
+    },
+    {
+     "url": "https://docs.web3signer.consensys.net",
+     "name": "Web3Signer"
+    }
+   ],
+   "risks": [
+    "FIN3",
+    "FIN4",
+    "GIR7",
+    "HCK3",
+    "KEC1",
+    "KEC6",
+    "KEC9",
+    "SLS1",
+    "SLS14",
+    "SLS15",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS5"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-client-diversity",
+   "name": "Client Diversity",
+   "group": "sec-mitigations-tech-stack",
+   "body": [
+    {
+     "t": "p",
+     "x": "A diverse set of clients for different protocols can reduce \"blast radius\" in a case where one client has a protocol error or other bug. This can be especially important if the bug causes a chain split. A common scenario is when an upgrade introduces a problem. The ability to migrate relevant keys to a different client, if a specific client error is observed, provides an important layer of protection. In addition, maintaining client diversity helps ensure that the network as a whole does so, ideally providing real protection against a vulnerability present in a single version of a single client by ensuring that particular version does not dominate the network."
+    },
+    {
+     "t": "p",
+     "x": "Note that there are often a different range of clients available at different levels of the infrastructure. For example in Ethereum, it is possible to run different clients on each of the Execution and Consensus layers."
+    },
+    {
+     "t": "h",
+     "x": "Best practice fo client diversity includes"
+    },
+    {
+     "t": "b",
+     "x": "Running multiple Execution and Consensus clients. See also ETHdiverse ETHdiverse"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW19",
+    "DOW2",
+    "DOW21",
+    "SLS20",
+    "SLS6",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-delinquent-state",
+   "name": "Delinquent State",
+   "group": "sec-mitigations-tech-stack",
+   "body": [
+    {
+     "t": "p",
+     "x": "Node operators need to withdraw validators correctly, as they can otherwise be put into a delinquent state. This can result in direct penalties, or an opportunity cost realised as monetary losses."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-control-secret-access",
+   "name": "Controlled and Audited Secret Access",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Best practice for credential management is to use a Single Sign on system, that gives users authorised access to secrets through e.g. certificates, and/or vault mechanisms."
+    },
+    {
+     "t": "p",
+     "x": "In this way, everything is audited, and anomaly detection can be activated for those vaults."
+    },
+    {
+     "t": "p",
+     "x": "Using multi-sig wallets requiring authorization from multiple parties for specific actions, helps to ensure both that relevant access is monitored and that it is correctly controlled."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "FIN1",
+    "GIR25",
+    "HCK1",
+    "HCK2",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC6",
+    "KEC9",
+    "SLS5"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-encrypt-data",
+   "name": "Encrypted Data",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Many different components interplay while a staking operation is going on. If confidential information is not protected by encryption, it can be intercepted and read during transmission. There is also a risk of accidental or malicious leaking of stored information, which can be somewhat mitigated if that information is stored in encrypted form."
+    },
+    {
+     "t": "p",
+     "x": "It is therefore crucial to ensure that confidential data is only stored and transmitted in an encrypted state."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "GIR10",
+    "GIR17",
+    "HCK1",
+    "HCK2",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC6",
+    "RER1",
+    "RER2"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-cold-storage",
+   "name": "Cold Storage",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Cold Storage, in particular \"air-gapped\" storage, can help protect information not used often such as withdrawal keys, private key generation materials, and the like, by making it more difficult for malicious entities to access the information and by reducing the chance that it will be leaked in the event of accidentally publishing data."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "GIR10",
+    "GIR17",
+    "KEC1",
+    "KEC6",
+    "KEC9"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-key-management",
+   "name": "Key Management",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Operating a node normally entails the use of a range of keys, such as"
+    },
+    {
+     "t": "b",
+     "x": "Keys used by signature management tools"
+    },
+    {
+     "t": "b",
+     "x": "A vault"
+    },
+    {
+     "t": "b",
+     "x": "SSH keys"
+    },
+    {
+     "t": "b",
+     "x": "API keys for cloud infrastructure"
+    },
+    {
+     "t": "p",
+     "x": "It is important to protect private keys from accidental or malicious misuse, and in particular unplanned deletion. It is not normal to provide broad access to unencrypted signing keys."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for key management include"
+    },
+    {
+     "t": "b",
+     "x": "follow relevant standards such as CCSS and KMS"
+    },
+    {
+     "t": "b",
+     "x": "ensuring that there are no single individuals with the capability to access or delete them,"
+    },
+    {
+     "t": "b",
+     "x": "having backups with strong acess control,"
+    },
+    {
+     "t": "b",
+     "x": "actively managing access to keys and key material, and"
+    },
+    {
+     "t": "b",
+     "x": "\"key rotation\", i.e. periodic changes of keys as well as rapid managed changes if a data breach occurs."
+    },
+    {
+     "t": "p",
+     "x": "Modern vault systems enable the enforcement of policies to ensure that access to keys is only available with verified roles, and deletion is managed according to established protocols."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://github.com/attestantio/dirk",
+     "name": "Dirk"
+    },
+    {
+     "url": "https://docs.web3signer.consensys.net",
+     "name": "Web3Signer"
+    }
+   ],
+   "risks": [
+    "FIN1",
+    "GIR14",
+    "GIR16",
+    "GIR18",
+    "GIR6",
+    "GIR7",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "SLS1",
+    "SLS3",
+    "SLS5"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-operational-info-management",
+   "name": "Operational Information Management",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Node operators are likely to rely on a wide range of operational information, including internal procedures, understanding software configurations, plans for future development, and employee management."
+    },
+    {
+     "t": "p",
+     "x": "Best practice includes ensuring there is no single point of failure due to centralized information being held by a single external provider or only being known to a single employee."
+    },
+    {
+     "t": "p",
+     "x": "Documentation, even if rarely actively read by those responsible for operations (who presumably know their job), is important for many reasons including"
+    },
+    {
+     "t": "b",
+     "x": "to enable onboarding new employees and service partners, or helping employees take on new roles"
+    },
+    {
+     "t": "b",
+     "x": "to ensure smooth continued operation in the case that a key employee's role changes, particularly where they leave the organisation"
+    },
+    {
+     "t": "b",
+     "x": "to enable accurate reporting as necessary"
+    },
+    {
+     "t": "b",
+     "x": "to enable monitoring of operations and investigation of security incidents and other failures"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW12",
+    "DOW13",
+    "DOW2",
+    "DOW21",
+    "DOW3",
+    "DOW4",
+    "FIN2",
+    "FIN3",
+    "FIN4",
+    "FIN6",
+    "FIN7",
+    "GIR15",
+    "GIR16",
+    "GIR18",
+    "GIR19",
+    "GIR20",
+    "GIR21",
+    "GIR22",
+    "GIR25",
+    "GIR4",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "KEC1",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "RER1",
+    "RER3",
+    "RER5",
+    "SLS14",
+    "SLS3",
+    "SLS4",
+    "SLS5",
+    "SPS0",
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-deletion-protection",
+   "name": "Deletion protection",
+   "group": "sec-mitigations-secret-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Loss of important information, especially loss of control over keys, can have a crippling impact. It is important to have mechanisms to protect against, and recover from, unintentional or malicious deletion of important data."
+    },
+    {
+     "t": "p",
+     "x": "Best Practise includes having journaled backups of important information."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW2",
+    "DOW20",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "DOW6",
+    "FIN6",
+    "GIR13",
+    "GIR4",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "KEC6",
+    "KEC9",
+    "RER1",
+    "RER3",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-least-privilege",
+   "name": "Least Privilege",
+   "group": "sec-mitigations-access-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "The core of Least Privilege is that access is only granted to those who need it, and only for as long as it is relevant. This means that an individual user's privileges are likely to change over time, and in particular any offboarding process includes a rapid revocation of user's assigned roles."
+    },
+    {
+     "t": "p",
+     "x": "Almost all Least Privilege implementation is managed through Role-based Access Control (commonly known as \"RBAC\"), where a set of roles are defined according to the tasks they need to perform, and access rights are based on holding a particular role, with individual users assigned relevant roles that are revoked or deliberately renewed on a timely basis. It is important to ensure that individuals can fulfil their designated tasks, without having authorizations they do not need."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for access control include"
+    },
+    {
+     "t": "b",
+     "x": "A Single Sign on mechanism that allows rapid assigning and revoking of roles"
+    },
+    {
+     "t": "b",
+     "x": "Authentication tokens that have a limited lifetime"
+    },
+    {
+     "t": "b",
+     "x": "Regular review of roles and permissions for both users and software"
+    },
+    {
+     "t": "b",
+     "x": "Disable privilege escalation mechanisms (e.g. executing as root user in Docker, `docker exec -uroot`, or impersonation in Keycloak)"
+    },
+    {
+     "t": "b",
+     "x": "Use of roles on the API endpoint level to determine the correct authorization."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://aws.amazon.com/cognito/",
+     "name": "Cognito"
+    },
+    {
+     "url": "https://www.keycloak.org",
+     "name": "Keycloak"
+    }
+   ],
+   "risks": [
+    "FIN1",
+    "GIR16",
+    "GIR22",
+    "GIR25",
+    "GIR7",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK6",
+    "KEC7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-employee-auth-management",
+   "name": "Employee Authorization Management",
+   "group": "sec-mitigations-access-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Ensuring that employees whose roles have changed do not have lingering credentials reduces the risk they or others can misuse those credentials to cause harm."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for employee authorization process includes"
+    },
+    {
+     "t": "b",
+     "x": "ensure authorization changes are automated as part of management of employee lifecycles,"
+    },
+    {
+     "t": "p",
+     "x": "covering role changes as well as termination, transfer, and promotion procedures"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW4",
+    "FIN1",
+    "GIR13",
+    "GIR25",
+    "GIR4",
+    "GIR7",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-manage-network-access",
+   "name": "Managed Network Access to Nodes",
+   "group": "sec-mitigations-access-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Following the principles of defense in depth and **least privilege**, it is important that nodes are not directly accessible without permission, and that they do not leak information to the Web that can help malicious parties gain unauthorized access."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for managed network access include"
+    },
+    {
+     "t": "b",
+     "x": "An internal virtual private network with only have well-defined endpoints accessible from the web"
+    },
+    {
+     "t": "b",
+     "x": "A load-balancer that has a firewall"
+    },
+    {
+     "t": "b",
+     "x": "Disable meta-data serving through public endpoints (e.g. port scans, or what server is running in what version)"
+    },
+    {
+     "t": "b",
+     "x": "Limits on outbound traffic of a node that runs a certain service"
+    },
+    {
+     "t": "b",
+     "x": "Rate limits to ensure that internal services cannot unintentionally DDos each other"
+    },
+    {
+     "t": "b",
+     "x": "Require explicit authorization of external access capability"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "GIR17",
+    "GIR9",
+    "HCK4"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-auth-policies",
+   "name": "Authentication Policies",
+   "group": "sec-mitigations-access-management",
+   "body": [
+    {
+     "t": "p",
+     "x": "Best practice is to use password and related authentication policies to ensure that access control mechanisms are sufficiently strong at every layer of the infrastructure. This can include appropriate requirements for the strength of passwords and the use of Multi-Factor Authentication as well as Multi-Sig requirements."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW4",
+    "FIN1",
+    "GIR13",
+    "GIR17",
+    "GIR22",
+    "GIR25",
+    "GIR6",
+    "GIR7",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK4",
+    "HCK5",
+    "HCK6",
+    "KEC1",
+    "KEC7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-manage-physical-access",
+   "name": "Managed Physical Access",
+   "group": "sec-mitigations-environment",
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers all physical devices that can access the Node, as well as all areas in which such devices are kept, whether \"on-premises\", distributed, hosted by a third party, or remote mobile devices such as laptops."
+    },
+    {
+     "t": "p",
+     "x": "Best practice for managing physical access includes ensuring that authorization is only granted as necessary, following the principles of Least Privilege. Generally this means some devices are physically segregated in areas where access is restricted according to function. Note that this covers the use of devices authorized to access the networks that nodes operate on, and is particularly important for devices authorized to access management and analytical functions of nodes."
+    },
+    {
+     "t": "p",
+     "x": "Ideally all physical access to premises and facilities is monitored, to deter and determine whether the facility is subject to piggybacking. This term refers to the situation where an unauthorized entrant is allowed in by someone who has a valid authorization for themselves. In the context of remote operators' access through a computer, controlling this is particularly challenging in practice."
+    },
+    {
+     "t": "p",
+     "x": "Piggybacking can occur inadvertently through politely holding a door for someone without checking that they have current valid authorization to enter, negligently by allowing someone to enter for a legitimate purpose despite knowing that person does not have valid authorization, or maliciously allowing someone to enter knowing that their purpose is nefarious."
+    },
+    {
+     "t": "p",
+     "x": "In the inadvertent case, relevant mitigations include"
+    },
+    {
+     "t": "b",
+     "x": "ensuring that all those with authorization understand the necessity to enforce physical access control,"
+    },
+    {
+     "t": "b",
+     "x": "providing simple and effective ways to check authorization,"
+    },
+    {
+     "t": "b",
+     "x": "ensuring that remote access devices as far as possible are dedicated to the defined purposes"
+    },
+    {
+     "t": "p",
+     "x": "(rather than allowing the use of general-purpose laptops that could be attacked when being used for a different task such as general email, or playing games)."
+    },
+    {
+     "t": "p",
+     "x": "To minimize negligently allowed access, it is important to ensure that access systems are effectively maintained and managed to ensure there is no good reason to allow an unauthorized person access. This can range from the design of onboarding systems to the effectiveness of internal management feedback systems for discovering unanticipated problems faced by operators."
+    },
+    {
+     "t": "p",
+     "x": "Best practice includes managing physical access with systems that can efficiently enable access to authorised parties (keycards, biometric scanners), and monitor actual access such as visual verification that the authorized party is the one entering."
+    },
+    {
+     "t": "p",
+     "x": "It is important to log and audit access sufficiently frequently to detect problems - see also Monitoring."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW10",
+    "DOW3",
+    "DOW4",
+    "DOW7",
+    "DOW9",
+    "GIR17",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "HCK6"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-distribute-hardware",
+   "name": "Physically Distributed Infrastructure",
+   "group": "sec-mitigations-environment",
+   "body": [
+    {
+     "t": "p",
+     "x": "A single validator represents a single point of failure, that can introduce slashing or downtime risks."
+    },
+    {
+     "t": "p",
+     "x": "DVT (Distributed Validator Technology) provides an approach to mitigating this problem, by distributing the keys and the hardware that runs validation, in such a way that multiple clients physically located in different places share the task of validation. Thus if a single client or small number of them fail, the overall validation is unaffected. (Note that while the Ethereum Foundation provides a specific technical specification for DVT that has been implemented the principes can be implemented in different ways.)"
+    },
+    {
+     "t": "p",
+     "x": "Likewise, maintaining multiple validators running on separate hardware and software can increase resilience to a failure in any one platform."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW5",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "HCK6",
+    "KEC6",
+    "SLS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-protect-utilities",
+   "name": "Protection against Utility Failure",
+   "group": "sec-mitigations-environment",
+   "body": [
+    {
+     "t": "p",
+     "x": "To ensure that a local utility failure does not impact a validator, it is useful to have redundant systems, such as a backup power supply e.g. through local batteries or power generation, and for connectivity e.g. physical connection such as fibre-optic cable, and one or more modes of wireless connection."
+    },
+    {
+     "t": "p",
+     "x": "The level of mitigation that is appropriate depends on the level of risk, and the costs of both failure and mitigating failure. These calculations mean economies of scale often enable larger-scale operations to be more robust than smaller ones, for a given price."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW15",
+    "DOW6",
+    "DOW7",
+    "DOW9"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-protect-from-environment",
+   "name": "Protection against Environmental Threat",
+   "group": "sec-mitigations-environment",
+   "body": [
+    {
+     "t": "p",
+     "x": "It is also important to ensure that facilities have appropriate protection from relevant environmental risks such as fire, flooding, extreme wind, as well as earthquakes and destructive physical attacks. Appropriate mitigations will depend in part on the specific location and nature of the facility, but will generally revolve around siting of facilities, their architecture, and specific measures to ensure resilience."
+    },
+    {
+     "t": "p",
+     "x": "Monitoring can also identify specific conditions that adversely affect equipment and suggest that a lifecycle plan needs adjustment - whether writing off equipment destroyed by fire, or increasing preventive maintenance for physical access systems that are being used far in excess of expectations that drove the existing maintenance plan."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW15",
+    "DOW5",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "SLS14",
+    "SLS15"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-manage-equipment-life",
+   "name": "Manage Equipment Lifecycle",
+   "group": "sec-mitigations-environment",
+   "body": [
+    {
+     "t": "p",
+     "x": "The lifecycle of equipment, most particularly node servers and computers used to access and manage them, is a determinant of overall security."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for lifecycle management include"
+    },
+    {
+     "t": "b",
+     "x": "a capability to remotely pause, shut down, and wipe devices clean"
+    },
+    {
+     "t": "p",
+     "x": "Monitoring can also identify specific conditions that adversely affect equipment and suggest that a lifecycle plan needs adjustment - whether writing off equipment destroyed by fire, or increasing preventive maintenance for physical access systems that are being used far in excess of expectations that drove the existing maintenance plan."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW15",
+    "DOW20",
+    "DOW21",
+    "DOW3",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC6"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-ssdlc",
+   "name": "Secure Development Lifecycle",
+   "group": "sec-mitigations-development-and-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "A secure development lifecycle helps ensure that vulnerabilities are not introduced to codebases, and subsequently deployed."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for secure development lifecycle include"
+    },
+    {
+     "t": "b",
+     "x": "auditable version control systems"
+    },
+    {
+     "t": "b",
+     "x": "thorough testing and authorisation before changes are accepted"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW10",
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW2",
+    "DOW6",
+    "FIN3",
+    "FIN4",
+    "GIR10",
+    "GIR13",
+    "GIR15",
+    "GIR17",
+    "GIR21",
+    "GIR6",
+    "GIR7",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "HCK6",
+    "KEC7",
+    "SLS1",
+    "SLS14",
+    "SLS15",
+    "SLS17",
+    "SLS19",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS5",
+    "SLS6",
+    "SLS7",
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-code-testing",
+   "name": "Comprehensive Testing for Changes to Code",
+   "group": "sec-mitigations-development-and-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "A comprehensive test suite helps ensure changes do not introduce new vulnerabilities or situations that lead to operational failures. Equally, it is important that someone other than the developer who produces Code changes reviews them."
+    },
+    {
+     "t": "p",
+     "x": "Static and Dynamic analysis is important, as well as user testing wherever changes impact user interface or user-generated content."
+    },
+    {
+     "t": "p",
+     "x": "Measuring test coverage, and requiring new tests that are reviewed as part of and code review, help ensure that coverage is sufficiently comprehensive to detect errors that can arise through later changes."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for testing code changes include"
+    },
+    {
+     "t": "b",
+     "x": "incorporating static and dynamic testing in the integration pipeline for code development."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW10",
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW6",
+    "FIN3",
+    "FIN4",
+    "GIR10",
+    "GIR11",
+    "GIR13",
+    "GIR15",
+    "GIR17",
+    "GIR18",
+    "GIR21",
+    "GIR23",
+    "GIR24",
+    "GIR6",
+    "GIR7",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "HCK6",
+    "KEC7",
+    "SLS1",
+    "SLS14",
+    "SLS15",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS5",
+    "SLS6",
+    "SLS7",
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-validate-inputs-outputs",
+   "name": "Validated Inputs and Outputs",
+   "group": "sec-mitigations-development-and-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Unchecked inputs are a major vector for a range of attacks. These include"
+    },
+    {
+     "t": "b",
+     "x": "brute force authorization, or denial of service (including DDoS) attacks, often identifiable by a high rate of failing requests using inputs with minimal variation"
+    },
+    {
+     "t": "b",
+     "x": "overflow attacks, where excessive input causes a problem, generally mitigated by programming practices or overflow-safe languages"
+    },
+    {
+     "t": "b",
+     "x": "targeted efforts to inject code that executes functionality that should not be authorized, or causes an adverse system reaction including a crash"
+    },
+    {
+     "t": "p",
+     "x": "Ideally, the load balancer in front of the node filters out all traffic with payloads that cause overflow. Additionally, it is important to validate inputs against the relevant parameters, particularly where these allow a range of functionalities to be triggered."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for input and output validation include"
+    },
+    {
+     "t": "b",
+     "x": "using a data schema such as JSON schema with schema evolution techniques,"
+    },
+    {
+     "t": "b",
+     "x": "defining minimum and maximum input sizes and MIME types."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://www.npmjs.com/package/ajv",
+     "name": "ajv"
+    },
+    {
+     "url": "https://ranger.apache.org",
+     "name": "Apache Ranger"
+    },
+    {
+     "url": "https://httpd.apache.org/docs/2.4/mod/core.html#limitrequestbody",
+     "name": "LimitRequestBody"
+    },
+    {
+     "url": "https://httpd.apache.org/docs/2.4/mod/core.html#limitrequestfields",
+     "name": "LimitRequestFields"
+    },
+    {
+     "url": "https://hibernate.org/orm/documentation/getting-started/",
+     "name": "Hibernate"
+    },
+    {
+     "url": "https://www.sqlalchemy.org",
+     "name": "SQLAlchemy"
+    },
+    {
+     "url": "https://typeorm.io",
+     "name": "TypeORM"
+    },
+    {
+     "url": "https://github.com/validatorjs/validator.js",
+     "name": "validatorjs"
+    }
+   ],
+   "risks": [
+    "DOW10",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "KEC6",
+    "KEC7",
+    "KEC9"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-minimize-customizing-software",
+   "name": "Avoid Customizing Third-party Software",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Validator software, and other software validators use, is very often open source. However, customising software can introduce errors. In addition customizations can produce incompatibilities when software is updated."
+    },
+    {
+     "t": "p",
+     "x": "This means that any customization introduces a need for continued extra testing, in particular whenever relevant software is updated. Customization also increases the risk that test coverage is inadequate, meaning a future error will not be found in pre-deployment testing and only discovered through a failure operating in production, with attendant risks of reputational damage, direct losses, and increased cost for incident management."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW13",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR16",
+    "GIR3",
+    "HCK2",
+    "HCK3",
+    "RER1",
+    "RER4",
+    "SLS5",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-configuration-management",
+   "name": "Configuration Management",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "It is important to manage the configuration of hardware, and software. A minimal profile helps reduce possible attack surface, while minimising, and carefully tracking, customisation is important to ensure smooth and safe upgrades."
+    },
+    {
+     "t": "p",
+     "x": "Software configuration to follow includes, among others:"
+    },
+    {
+     "t": "b",
+     "x": "Firewall configurations"
+    },
+    {
+     "t": "b",
+     "x": "Docker image setups"
+    },
+    {
+     "t": "b",
+     "x": "Container orchestration configurations"
+    },
+    {
+     "t": "b",
+     "x": "Database configurations"
+    },
+    {
+     "t": "b",
+     "x": "Webserver/Load balancer configurations"
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://www.cisecurity.org",
+     "name": "CIS benchmarks"
+    },
+    {
+     "url": "https://www.coguard.io",
+     "name": "CoGuard"
+    },
+    {
+     "url": "https://www.liquibase.org",
+     "name": "Liquibase"
+    }
+   ],
+   "risks": [
+    "DOW12",
+    "DOW13",
+    "DOW21",
+    "GIR3",
+    "GIR4",
+    "HCK2",
+    "HCK3",
+    "HCK6",
+    "SLS1",
+    "SLS3",
+    "SLS4",
+    "SLS5",
+    "SLS6"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-protect-against-malware",
+   "name": "Protection against Supply-chain Malware",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Protection against malware needs to be implemented on all assets and users need to exercise proper caution."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for protecting against supply-chain malware include"
+    },
+    {
+     "t": "b",
+     "x": "Regularly check the latest CVE entries., to cover all software tools used."
+    },
+    {
+     "t": "b",
+     "x": "Specifically check for any announcements of vulnerabilities before upgrading any software component"
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://github.com/aquasecurity/trivy",
+     "name": "Trivy"
+    }
+   ],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW14",
+    "DOW2",
+    "GIR15",
+    "GIR17",
+    "HCK2",
+    "HCK4",
+    "HCK6",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-test-predeployment",
+   "name": "Deployment testing environments",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Use separate tests and staging environments"
+    },
+    {
+     "t": "p",
+     "x": "This minimizes a potential blast radius. It is important to run any change (even an update of a validator software or Web3Signer) through a test environment first to maximize the likelihood that any errors can be discovered before they impact a production environment."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR11",
+    "GIR13",
+    "GIR18",
+    "GIR20",
+    "GIR21",
+    "SLS14",
+    "SLS6",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-containerized-environments",
+   "name": "Containerized and Orchestrated Environments",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Containerized and orchestrated environments are designed to reinforce security by automating many good practices, with mechanisms that have been widely tested in diverse environments. As tools that can be used well or badly, their best practice recommendations are important to ensure the the full benefits are realised."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW21",
+    "GIR13",
+    "GIR23",
+    "HCK2",
+    "SLS1",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS5",
+    "SLS6",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-process-automation",
+   "name": "Process Automation",
+   "group": "sec-mitigations-manage-updates",
+   "body": [
+    {
+     "t": "p",
+     "x": "Human error is always a risk. An automated script, whether or not invoked by a human, can help minimise inadvertent errors."
+    },
+    {
+     "t": "p",
+     "x": "Another benefit of properly set up automation is that it can help reduce the risk of exposing secrets."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://airflow.apache.org",
+     "name": "Apache Airflow"
+    },
+    {
+     "url": "https://nifi.apache.org",
+     "name": "Apache Nifi"
+    },
+    {
+     "url": "https://docs.github.com/en/actions",
+     "name": "GitHub Actions"
+    },
+    {
+     "url": "https://about.gitlab.com/topics/gitops/#what-is-git-ops",
+     "name": "GitOps lifecycle"
+    }
+   ],
+   "risks": [
+    "DOW19",
+    "DOW20",
+    "DOW4",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6",
+    "GIR16",
+    "GIR18",
+    "GIR19",
+    "GIR20",
+    "GIR21",
+    "GIR25",
+    "KEC6",
+    "KEC9",
+    "SLS1",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS2",
+    "SLS3",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-monitor-blockchain",
+   "name": "Blockchain",
+   "group": "sec-mitigations-monitoring",
+   "body": [
+    {
+     "t": "b",
+     "x": "are **Slashing Events** occurring on the beacon chain? To whom? How is this impacting the network?"
+    },
+    {
+     "t": "b",
+     "x": "is the **Anti-Slashing Database** functioning correctly?"
+    },
+    {
+     "t": "b",
+     "x": "how well are **Relay Lists** balancing load and availability to avoid downtime conditions?"
+    },
+    {
+     "t": "b",
+     "x": "are **Chain Reorganizations** occurring? Are there patterns of causes?"
+    },
+    {
+     "t": "b",
+     "x": "is the Consensus layer reaching **Finality** in accordance with expectations?"
+    },
+    {
+     "t": "b",
+     "x": "is **MEV** affecting performance or returns?"
+    },
+    {
+     "t": "b",
+     "x": "are **Block Proposals**, **Block Height**, **Attestations** proceeding in line with history and expecatations?"
+    },
+    {
+     "t": "b",
+     "x": "Are there anomalies in **Sync Committees**?"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW10",
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW15",
+    "DOW19",
+    "DOW7",
+    "FIN5",
+    "GIR4",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-monitor-systems",
+   "name": "Node, System and Network Health",
+   "group": "sec-mitigations-monitoring",
+   "body": [
+    {
+     "t": "b",
+     "x": "do key operational metrics like CPU usage, memory usage, restarts, and uptime of nodes indicate **Healthy Node** conditions?"
+    },
+    {
+     "t": "b",
+     "x": "is **Peering Connectivity** normal?"
+    },
+    {
+     "t": "b",
+     "x": "are **Failover Systems** functional, ready to operate, and not operating unexpectedly?"
+    },
+    {
+     "t": "b",
+     "x": "are **Cloud Systems** functioning according to agreements?"
+    },
+    {
+     "t": "b",
+     "x": "do **Cloud Service Notifications** help effectively anticipate and manage expected downtime and maintenance?"
+    },
+    {
+     "t": "b",
+     "x": "are **App-specific** metrics within expected parameters?"
+    },
+    {
+     "t": "b",
+     "x": "are **Redundant Monitors** producing consistent results?"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW1",
+    "DOW10",
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW15",
+    "DOW2",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "FIN3",
+    "FIN4",
+    "GIR7",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-monitor-compliance",
+   "name": "Security and Compliance",
+   "group": "sec-mitigations-monitoring",
+   "body": [
+    {
+     "t": "p",
+     "x": "Monitoring for unusual patterns or spikes can help detect a security breach or an exploit in progress. In many cases, even if security is breached, secure and accurate logs are important to determine how this took place, in order to protect against recurrence. The following are among indicators of a security issue, and information that can help determine what happened."
+    },
+    {
+     "t": "b",
+     "x": "**Key Usage**, **Authorised Access**, and **Access Control Changes** anomalies, especially in sensitive systems such as"
+    },
+    {
+     "t": "p",
+     "x": "2FA configuration, security platforms, or network monitoring solutions VPNs."
+    },
+    {
+     "t": "b",
+     "x": "**Phishing** and similar attempts to attack authorized users through social engineering."
+    },
+    {
+     "t": "b",
+     "x": "Attacks on **Firewalls** and **Endpoint Attacks**, both for employee devices and infrastructure nodes, or directed at **Bastion Nodes**."
+    },
+    {
+     "t": "p",
+     "x": "These can be indicative of an attack or exploit in preparation or underway"
+    },
+    {
+     "t": "b",
+     "x": "**Relay behavior** such as compliance aspects and availability metrics."
+    },
+    {
+     "t": "b",
+     "x": "Ideally, **Bug Reports** and **Community Discussion** will not be the first source of notification about a problem, but it is important to monitor them."
+    },
+    {
+     "t": "b",
+     "x": "Various services can monitor whether **Confidential Data** are available publicly, demonstrating there has been a data breach."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW10",
+    "DOW12",
+    "DOW19",
+    "DOW4",
+    "FIN1",
+    "FIN2",
+    "FIN5",
+    "FIN6",
+    "FIN7",
+    "GIR14",
+    "GIR15",
+    "GIR17",
+    "GIR22",
+    "GIR6",
+    "GIR9",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK6"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-monitor-upgrades",
+   "name": "Upgrades",
+   "group": "sec-mitigations-monitoring",
+   "body": [
+    {
+     "t": "b",
+     "x": "does the **Upgrade Process** including client code source, configuration and testnet and production deployment,"
+    },
+    {
+     "t": "p",
+     "x": "work as desired, consume unexpected time, or generate errors and issues?"
+    },
+    {
+     "t": "b",
+     "x": "how does **Customized Code in Testnet** behave compared to the code deployed in production? This is especially relevant for network updates."
+    },
+    {
+     "t": "b",
+     "x": "is **System Configuration** stable?"
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW19",
+    "DOW2",
+    "GIR11",
+    "GIR14",
+    "GIR18",
+    "GIR19",
+    "GIR20",
+    "GIR21",
+    "HCK3",
+    "HCK4",
+    "SLS6",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-doppelganger-protection",
+   "name": "Doppelg\u00e4nger Protection",
+   "group": "sec-mitigations-monitoring",
+   "body": [
+    {
+     "t": "p",
+     "x": "If two validators with the same identifiers are running at the same time is important to shut one down as fast as possible. Most validators provide built-in mechanisms to detect doppelgangers. Other tools and technicques can also detect and act on this."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://lighthouse-book.sigmaprime.io/validator_doppelganger.html",
+     "name": "Lighthouse"
+    },
+    {
+     "url": "https://prysm.offchainlabs.com/docs/backup-and-migration/slashing-protection",
+     "name": "Prysm"
+    },
+    {
+     "url": "https://docs.teku.consensys.io/how-to/prevent-slashing/detect-doppelgangers",
+     "name": "Teku"
+    },
+    {
+     "url": "https://nimbus.guide/doppelganger-detection.html",
+     "name": "Nimbus"
+    },
+    {
+     "url": "https://pkg.go.dev/github.com/ssvlabs/ssv/doppelganger",
+     "name": "Doppelganger protection in `ssv.network`"
+    },
+    {
+     "url": "https://github.com/SimplyStaking/DoppelBuster",
+     "name": "DoppelBuster"
+    },
+    {
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html",
+     "name": "Userpool Addons for auditing authentications"
+    },
+    {
+     "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafv2-webacl.html",
+     "name": "WAF module"
+    },
+    {
+     "url": "https://www.elastic.co/elastic-stack/",
+     "name": "ELK stack"
+    },
+    {
+     "url": "https://github.com/attestantio/esd",
+     "name": "ESD monitors slashing events on the Ethereum chain"
+    },
+    {
+     "url": "https://github.com/lidofinance/ethereum-validators-monitoring",
+     "name": "Ethereum validator monitoring"
+    },
+    {
+     "url": "https://grafana.com/docs/grafana/latest/alerting/set-up/",
+     "name": "Grafana- an example of an alerting setup in Grafana"
+    },
+    {
+     "url": "https://github.com/SimplyStaking/eth-block-proposal-monitor",
+     "name": "MEV monitoring tool from SimplyStaking"
+    },
+    {
+     "url": "https://prometheus.io/docs/introduction/overview/",
+     "name": "Prometheus"
+    },
+    {
+     "url": "https://wazuh.com",
+     "name": "Wazuh"
+    }
+   ],
+   "risks": [
+    "DOW10",
+    "DOW2",
+    "SLS1",
+    "SLS2",
+    "SLS5",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-comms-stakeholders",
+   "name": "Stakeholder Communication Management",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "Some key stakeholders are Anonymous Stakeholders, who might follow a Node Operator's public information channels, or operate independently, but who do not provide individual communication information to Operators."
+    },
+    {
+     "t": "b",
+     "x": "Low stake investors"
+    },
+    {
+     "t": "b",
+     "x": "Potential investors"
+    },
+    {
+     "t": "b",
+     "x": "Communities developing technical standards"
+    },
+    {
+     "t": "b",
+     "x": "Education Providers"
+    },
+    {
+     "t": "b",
+     "x": "Corporate Regulators"
+    },
+    {
+     "t": "p",
+     "x": "Regulators of various kinds can require that Node Operators provide them with specific information, but do not necessarily communicate with Node Operators on an individual basis"
+    },
+    {
+     "t": "p",
+     "x": "Node operators will also have Known Stakeholders, who have an identity known to the Node Operator that includes at least one direct communications channel such as messaging, email, or telephone. These typically include at least some of"
+    },
+    {
+     "t": "b",
+     "x": "High stake investors - with some of whom the Operator could also have contractual obligations"
+    },
+    {
+     "t": "b",
+     "x": "Service Partners, who might be involved in operating and managing protocols and requiring governance votes, or hosting, managing or operating infrastructure as part of the node operation setup"
+    },
+    {
+     "t": "b",
+     "x": "Media channels, platforms, and accounts covering technical and non-technical news and reports"
+    },
+    {
+     "t": "b",
+     "x": "Other Node Operators running validators on the same network"
+    },
+    {
+     "t": "b",
+     "x": "Staff such as those developing and maintaining critical node operations software"
+    },
+    {
+     "t": "b",
+     "x": "Individuals or organizations using additional service provided by Node Operators (e.g., API users, customers for white-label solutions etc.)"
+    },
+    {
+     "t": "p",
+     "x": "Stakeholders' preferences for communication channels differ. While many Known Stakeholders will have explicitly requested direct communication, it is important to have additional channels that enable Anonymous Stakeholders to follow important developments."
+    },
+    {
+     "t": "p",
+     "x": "Broadly, communication channels can be considered two-way, enabling communication with an individual Known Stakeholder or with all of them at once, or broadcast, enabling Anonymous Stakeholders to receive important information, often while preserving their anonymity."
+    },
+    {
+     "t": "p",
+     "x": "Additionally, some mechanisms allow for persistent information, while others are only temporary; A website can be maintained long-term or the information can be removed, information sent by email can easily be retained by the recipient in perpetuity, while information in e.g. a Slack or Telegram channel could be deleted after a matter of days or weeks"
+    },
+    {
+     "t": "p",
+     "x": "It is also important, especially for services used for two-way communication with Known Stakeholders, to consider the security and privacy of the channels used. While channels such as Telegram or Whatsapp use encryption, in the case of the former all communication is decoded at some unknown centralized point, in the latter large amounts of metadata are available to the service provider."
+    },
+    {
+     "t": "p",
+     "x": "While many messaging services can behave in either manner, some such as websites are well-suited to broadcast communication and others are more suited to individual two-way communication."
+    },
+    {
+     "t": "p",
+     "x": "As well as identifying the most appropriate channels for communication with Known Stakeholders or classes of Anonymous Stakeholders, it is important to understand what it is appropriate to communicate, and to whom. Some stakeholders will expect a \"close management\", with direct individualized two-way communication, and very rapid reporting on incidents and important information. Others will want to know that they are informed in case of security incidents, or important regulatory changes, but prefer a lower volume of information. It is likely that different circumstances will mean that a given Stakeholder moves between \"categories\", with different communications strategies or procedures being more appropriate depending on specific context."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for stakeholder management include"
+    },
+    {
+     "t": "b",
+     "x": "Track and categorise Known Stakeholders"
+    },
+    {
+     "t": "b",
+     "x": "Assess communication tools relevant to Anonymous Stakeholders"
+    },
+    {
+     "t": "p",
+     "x": "A number of jurisdictions (such as the EU, with the GDPR) regulate the use of information about individuals, and it is important to understand and comply with such regulations to avoid reputational, legal and financial risks."
+    }
+   ],
+   "tools": [
+    {
+     "url": "assets/images/stakeholder-map.png",
+     "name": "A Stakeholder Map"
+    },
+    {
+     "url": "https://docs.google.com/spreadsheets/d/1ovBZbYhR5c-l83F4KKgNKam8igAKPASS",
+     "name": "A Stakeholder Register Spreadsheet"
+    }
+   ],
+   "risks": [
+    "FIN1",
+    "FIN6",
+    "FIN7",
+    "RER1",
+    "RER3",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-incident-response",
+   "name": "Incident Response Plans",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "An Incident Response Plan documents procedures for managing security incidents and events, as guidance for employees or incident responders who believe they have discovered, or are responding to, a security incident. A well-documented Incident Response Plan helps employees in a high-stress situation by providing a reminder of all important actions and considerations. To be useful, it is necessary that relevant employees know the plans exist, and how to find them."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for incident response plans include"
+    },
+    {
+     "t": "b",
+     "x": "Identify relevant participants in advance, with well-defined decision-making responsibilities"
+    },
+    {
+     "t": "b",
+     "x": "Redundancy against specific failures such as a key employee being unavailable"
+    },
+    {
+     "t": "b",
+     "x": "Clear information about how to investigate and triage incidents,"
+    },
+    {
+     "t": "p",
+     "x": "including when to notify and involve particular participants and how to escalate issues to the most appropriate person or team."
+    },
+    {
+     "t": "b",
+     "x": "Define clear procedures to follow for specific sets of circumstances. Where it is possible and appropriate, automated responses and alerting triggered by"
+    },
+    {
+     "t": "p",
+     "x": "Monitoring can help ensure rapid response."
+    },
+    {
+     "t": "b",
+     "x": "Data collection and distribution to enable effective response, external communication, and Post Mortem analysis"
+    },
+    {
+     "t": "b",
+     "x": "Identify relevant Stakeholders and define communication strategies for both internal and external communications"
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://csrc.nist.gov/pubs/sp/800/61/r2/final",
+     "name": "NIST Incident Response template"
+    },
+    {
+     "url": "https://docs.google.com/document/d/1ynZfeMh3vxZu7Juh-f34b50_3WHgejiL",
+     "name": "DUCK Incident Response Template"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW10",
+    "DOW2",
+    "DOW21",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "FIN1",
+    "FIN6",
+    "FIN7",
+    "GIR13",
+    "HCK3",
+    "RER1",
+    "RER3",
+    "SLS17",
+    "SLS18",
+    "SLS19"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mitigations-identify-incidents",
+   "name": "Identifying and Responding to Security Incidents",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "There are several ways to identify that a security incident is taking place. Best practice is to have extensive monitoring in place, to identify anomalies early, with alerting and potentially direct reaction mechanisms. Although learning from third-party discussions is a terrible way to find out about an incident, it is still better than simply not discovering it, so monitoring channels where such discussions take place is a valuable part of an overall strategy."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "FIN6",
+    "GIR13",
+    "GIR14",
+    "GIR15",
+    "GIR22",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "HCK6",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "RER1",
+    "RER3",
+    "RER5",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-incident-learning",
+   "name": "Analyzing Security Events",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "This is often referred to as a \"Post Mortem\", used to learn from the event and improve relevant Incident Response Plans."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for analyzing security events include"
+    },
+    {
+     "t": "b",
+     "x": "Determine the root cause or causes of an incident"
+    },
+    {
+     "t": "b",
+     "x": "Examine how the incident was allowed to occur"
+    },
+    {
+     "t": "b",
+     "x": "Consider what changes can be implemented to prevent or mitigate similar events from occurring."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "DOW10",
+    "DOW4",
+    "DOW6",
+    "FIN7",
+    "GIR13",
+    "GIR14",
+    "GIR15",
+    "GIR6",
+    "GIR7",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "HCK6",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "SLS14",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS5"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-disaster-recovery",
+   "name": "Disaster Recovery Plans",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "A Disaster Recovery Plan is a specialized Incident Response Plan that gives guidance on recovering one or more information systems at an alternate facility, in response to a major hardware or software failure including the partial or complete destruction of facilities."
+    },
+    {
+     "t": "h",
+     "x": "Best practices for disaster recovery plans include"
+    },
+    {
+     "t": "b",
+     "x": "Maintain secured up-to-date copies of production environments to enable fast restoration."
+    }
+   ],
+   "tools": [
+    {
+     "url": "https://csrc.nist.gov/files/pubs/sp/800/34/r1/upd1/final/docs/sp800-34-rev1_cp_template_high_impact_system.docx",
+     "name": "NIST Disaster Response template"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW2",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "GIR15",
+    "GIR16",
+    "GIR19",
+    "GIR21",
+    "GIR22",
+    "GIR25",
+    "HCK6",
+    "KEC6",
+    "KEC7",
+    "KEC9"
+   ],
+   "all": false
+  },
+  {
+   "id": "sec-mit-incident-simulation",
+   "name": "Incident Simulations",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "These are also known as \"Pre-Mortems\"."
+    },
+    {
+     "t": "p",
+     "x": "Regular simulations of implementing an Incident Response Plan ensure that relevant personnel are familiar with them and can efficiently follow them when necessary. \"Pre-Mortems\" simulating or \"war-gaming\" a specific failure also tests those procedures to give some idea of whether they are appropriate and adequate. It also often motivates participants to think about other risks, and whether appropriate procedures and mitigations are in place."
+    },
+    {
+     "t": "p",
+     "x": "There are many possible approaches to an incident simulation, and many eventualities that they can cover. Example topics for Pre-Mortems include variations on themes such as"
+    },
+    {
+     "t": "b",
+     "x": "Unauthorized users gain access to the servers and set about making mischief"
+    },
+    {
+     "t": "b",
+     "x": "A complex security compromise where details are not immediately available"
+    },
+    {
+     "t": "b",
+     "x": "A specific scenario (environmental disaster, utility failure, operational error) results in system downtime"
+    },
+    {
+     "t": "p",
+     "x": "Articles such as PREMORTEM offer further information on how to plan and implement simulations, and how to derive the maximum benefit from them."
+    }
+   ],
+   "tools": [],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "sec-mit-incident-communication",
+   "name": "Incident Communication",
+   "group": "sec-mitigations-incident-response",
+   "body": [
+    {
+     "t": "p",
+     "x": "As well as direct financial losses, security incidents can also result in substantial reputational damage. Appropriate Incident Communication with stakeholders about security incidents, both during and after the relevant incident, can significantly mitigate this risk."
+    },
+    {
+     "t": "p",
+     "x": "It is important to note that inappropriate communication during an incident can increase the damage. External communication has to balance stakeholders' need for information that enables them to respond in a well-informed manner against the importance of providing clear information with as much certainty as feasible that it will not later be contradicted."
+    },
+    {
+     "t": "h",
+     "x": "Best practice for incident communication include"
+    },
+    {
+     "t": "b",
+     "x": "Providing information as soon as possible"
+    },
+    {
+     "t": "b",
+     "x": "Providing a detailed post-incident summary."
+    }
+   ],
+   "tools": [],
+   "risks": [
+    "FIN6",
+    "HCK4",
+    "RER1",
+    "RER2",
+    "RER3",
+    "SPS0"
+   ],
+   "all": false
+  }
+ ],
+ "ctlGroups": [
+  {
+   "id": "sec-controls-risk-management",
+   "name": "Controls for Risk Management",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-fin-reg",
+   "name": "Controls for Financial and Regulatory Risk",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-people-management",
+   "name": "Controls for People Management",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-tech-stack",
+   "name": "Controls for Technology Stack",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-info-secrets",
+   "name": "Controls for Information and Secret Management",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-access",
+   "name": "Controls for Access Control",
+   "externals": [
+    {
+     "fw": "OWASP_ACCESS_CONTROL",
+     "ref": ""
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 5.15"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 6.1"
+    }
+   ],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-monitoring",
+   "name": "Controls for Automated Monitoring",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-environment",
+   "name": "Controls for Environmental Threat Management",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-updates",
+   "name": "Controls for Development and Update Process",
+   "externals": [],
+   "risks": []
+  },
+  {
+   "id": "sec-controls-response",
+   "name": "Controls for Communication and Incident Response",
+   "externals": [],
+   "risks": []
+  }
+ ],
+ "controls": [
+  {
+   "id": "req-document-process-relevant",
+   "name": "Ensure Activities Support Operational Goals",
+   "group": "sec-controls-risk-management",
+   "reqs": [
+    {
+     "id": "req-document-process-relevant",
+     "text": "Node Operators MUST document how their processes and tools serve their business goals",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 5.2"
+    }
+   ],
+   "risks": [
+    "DOW16",
+    "DOW18",
+    "GIR5",
+    "SLS1",
+    "SLS11",
+    "SLS12",
+    "SLS13",
+    "SLS14",
+    "SLS15",
+    "SLS17",
+    "SLS18",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS5"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-review-dependency-replacement",
+   "name": "Assess Dependencies and Replacement Strategies and Costs",
+   "group": "sec-controls-risk-management",
+   "reqs": [
+    {
+     "id": "req-review-dependency-replacement",
+     "text": "Node Operators MUST review their dependencies on staff and external suppliers and how to replace key staff or suppliers every year",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "External suppliers can change terms, shut down products or support, and key staff can leave or be indisposed for long enough to impact business functions."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW11",
+    "DOW14",
+    "DOW19",
+    "DOW20",
+    "FIN1",
+    "GIR24",
+    "GIR25",
+    "SLS6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-risk-assessment",
+   "name": "Document Risk Assessments",
+   "group": "sec-controls-risk-management",
+   "reqs": [
+    {
+     "id": "req-document-risk-assessment",
+     "text": "Node Operators MUST document their assessments of risks, and what risks they class as acceptable",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 3.1"
+    }
+   ],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "req-follow-mitigation-process",
+   "name": "Follow Processes",
+   "group": "sec-controls-risk-management",
+   "reqs": [
+    {
+     "id": "req-follow-mitigation-process",
+     "text": "Node Operators MUST ensure that processes for risk mitigation are followed in practice",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Best practice is to ensure that where possible, processes are automated"
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "FIN1",
+    "FIN2",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-payment-rails",
+   "name": "Payment rails",
+   "group": "sec-controls-fin-reg",
+   "reqs": [
+    {
+     "id": "req-document-payment-rails",
+     "text": "Node Operators MUST document payment processes including currency and exchange details",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "FIN2",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6",
+    "HCK1",
+    "RER4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-review-regulatory-compliance",
+   "name": "Updated Regulatory Compliance",
+   "group": "sec-controls-fin-reg",
+   "reqs": [
+    {
+     "id": "req-review-regulatory-compliance",
+     "text": "Node Operators MUST review relevant regulation and update processes for compliance as necessary at least quarterly",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "FIN6",
+    "RER2"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-identify-staff",
+   "name": "Identify Relevant Entities",
+   "group": "sec-controls-people-management",
+   "reqs": [
+    {
+     "id": "req-identify-staff",
+     "text": "Node Operators MUST know the identity of entities who are authorized to manage operations",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Best practice is to identify every individual who works for the Node Operator. In the case of corporate third-party providers, sensible due diligence does not always extend to identifying specific individuals."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 5.16"
+    }
+   ],
+   "risks": [
+    "FIN1",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "KEC7",
+    "RER2",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-manage-counterparty-risk",
+   "name": "Document Vendors and Partner Risk",
+   "group": "sec-controls-people-management",
+   "reqs": [
+    {
+     "id": "req-manage-counterparty-risk",
+     "text": "Node Operators MUST implement documented procedures for evaluating and reviewing counterparty risks from vendors and partners",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "b",
+     "x": "Establishing a process for Vendor and Business Partner engagement and assessing existing as well as new vendors and business partners"
+    },
+    {
+     "t": "b",
+     "x": "Ensuring that any identified issues are fixed, and regressions can be identified."
+    },
+    {
+     "t": "b",
+     "x": "Terminating relationships efficiently where problems arise, or the relationship ends."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 9.2"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW19",
+    "FIN1",
+    "GIR5",
+    "SLS9"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-train-staff",
+   "name": "Provide Training",
+   "group": "sec-controls-people-management",
+   "reqs": [
+    {
+     "id": "req-train-staff",
+     "text": "Node Operators MUST ensure entities who are authorized to manage operations have and maintain the necessary knowledge to minimize risks to the Node Operator in the course of performing their work",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW21",
+    "FIN1",
+    "FIN7",
+    "GIR16",
+    "GIR22",
+    "GIR25",
+    "RER2",
+    "SLS17"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-update-3p-software",
+   "name": "Keep Software Updated",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-update-3p-software",
+     "text": "Node Operators MUST keep third-party software up to date",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This control does not imply that the latest available update is automatically applied, rather that Node Operators have clear and effective mechanisms to ensure they are aware of updates and apply them in accordance with their update management procedures, taking into account the controls in Controls for Development and Update Process."
+    },
+    {
+     "t": "p",
+     "x": "Best practice is to monitor software in use, to know when an update is available, and to update as fast as possible while following procedures to manage those updates securely. In some cases, assessing an update will lead to a decision that there is no need to apply a specific update, or a risk in doing so that outweighs the benefits."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW19",
+    "HCK4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-local-slashing-db",
+   "name": "Anti-slashing Database",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-local-slashing-db",
+     "text": "Node Operators MUST have a persistent local anti-slashing database",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "SLS1",
+    "SLS14",
+    "SLS15",
+    "SLS18",
+    "SLS19",
+    "SLS2",
+    "SLS3",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-signature-requirements",
+   "name": "Signature management",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-document-signature-requirements",
+     "text": "Node Operators MUST document signature requirements for high-value transactions, including the definitions used to identify such transactions",
+     "level": "MUST"
+    },
+    {
+     "id": "req-use-signature-management",
+     "text": "Node Operators SHOULD use signature management tools to help secure high-value transactions",
+     "level": "SHOULD"
+    },
+    {
+     "id": "req-ensure-signature-continuity",
+     "text": "The primary and backup/failover versions of Signature management tools MUST implement mechanisms to ensure data continuity",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "GIR16",
+    "GIR7",
+    "KEC6",
+    "KEC9",
+    "SLS1",
+    "SLS15",
+    "SLS2",
+    "SLS3",
+    "SLS4",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-client-diversity",
+   "name": "Client Diversity",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-client-diversity",
+     "text": "Node Operators MUST deploy at least 2 distinct client applications for any level of the blockchain where at least 3 clients are available",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW2",
+    "GIR13",
+    "GIR24",
+    "SLS20",
+    "SLS6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-dedicated-devices",
+   "name": "Secure Devices",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-dedicated-devices",
+     "text": "Devices that control critical functions MUST be dedicated to that purpose, and configured with only the necessary software for their intended purpose",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This applies to servers acting as validators, but also to devices authorized to access and administer those servers remotely."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW2",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-withdrawal-process",
+   "name": "Validator Withdrawal",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-document-withdrawal-process",
+     "text": "Node Operators MUST implement processes to withdraw validators from a network in such a way that they are not penalised for disappearing",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "SLS2",
+    "SPS1"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-configuration",
+   "name": "Manage Software and Hardware Configuration",
+   "group": "sec-controls-tech-stack",
+   "reqs": [
+    {
+     "id": "req-document-configuration",
+     "text": "Node Operators MUST document configuration of software and hardware",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 7.1"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.9"
+    }
+   ],
+   "risks": [
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW20",
+    "DOW21",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6",
+    "GIR18",
+    "GIR19",
+    "GIR20",
+    "GIR3",
+    "KEC6",
+    "KEC9",
+    "RER1",
+    "RER4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-manage-keys",
+   "name": "Key Management",
+   "group": "sec-controls-info-secrets",
+   "reqs": [
+    {
+     "id": "req-manage-keys",
+     "text": "Node Operators MUST implement appropriate key management procedures",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Best Practise includes following a commonly recognised key management standard such as"
+    },
+    {
+     "t": "b",
+     "x": "CCSS: a set of requirements for securing Cryptocurrency systems, focusing on Key Management. Certification for systems is available at three levels, and is granted by certified CCSS Auditors."
+    },
+    {
+     "t": "b",
+     "x": "KMS: a set of requirements for Key Management designed for organisations working in blockchain, allowing self-attestation of conformance."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-manage-information-lifecycle",
+   "name": "Manage Information Lifecycles",
+   "group": "sec-controls-info-secrets",
+   "reqs": [
+    {
+     "id": "req-manage-information-lifecycle",
+     "text": "Node Operators MUST document and follow information lifecycle processes for important operational information",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This includes the definition and enforcement of retention periods, and the use of thorough deletion mechanisms, such as shred."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.10"
+    }
+   ],
+   "risks": [
+    "DOW17",
+    "SLS10"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-backup-daily",
+   "name": "Backup and Protect Data against Loss",
+   "group": "sec-controls-info-secrets",
+   "reqs": [
+    {
+     "id": "req-backup-daily",
+     "text": "Node Operators MUST implement backup procedures, at minimum daily, for important operational data",
+     "level": "MUST"
+    },
+    {
+     "id": "req-journal-backups",
+     "text": "Backup Procedures SHOULD produce journaled backups covering relevant retention periods",
+     "level": "SHOULD"
+    },
+    {
+     "id": "req-protect-against-deletion",
+     "text": "Node Operators MUST implement protection against accidental or malicious deletion of data",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "These requirements cover all information required by controls in this specification."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "FIN6",
+    "GIR13",
+    "GIR4",
+    "HCK2",
+    "HCK4",
+    "KEC6",
+    "KEC9",
+    "RER1",
+    "RER3",
+    "SLS10",
+    "SLS11",
+    "SLS12",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-maintain-records",
+   "name": "Record Important Operational Knowledge",
+   "group": "sec-controls-info-secrets",
+   "reqs": [
+    {
+     "id": "req-maintain-records",
+     "text": "Node Operators MUST record and maintain important operational information",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Best practice is to use a documentation management system. While this is likely to have different levels of access control, it is important that no information is available to only one employee."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW1",
+    "DOW16",
+    "DOW18",
+    "DOW4",
+    "FIN1",
+    "FIN5",
+    "FIN6",
+    "GIR25",
+    "GIR4",
+    "HCK4",
+    "KEC10",
+    "KEC2",
+    "KEC3",
+    "KEC6",
+    "KEC9",
+    "RER1",
+    "RER3",
+    "SLS10",
+    "SLS14",
+    "SLS3",
+    "SLS4",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-data-retention-policy",
+   "name": "Document data retention policy",
+   "group": "sec-controls-info-secrets",
+   "reqs": [
+    {
+     "id": "req-data-retention-policy",
+     "text": "Node Operators MUST have a policy for data retention",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This needs to provide adequate retention to enable historical analysis and checking for anomalous patterns, while minimizing stored data and ensuring compliance with relevant data protection regulation."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW13",
+    "DOW4",
+    "FIN6",
+    "GIR4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-appropriate-authentication",
+   "name": "Authentication required for services",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-appropriate-authentication",
+     "text": "All services MUST require appropriate authentication privileges",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "For example, a Node does not respond to anonymous requests from an unknown user."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW4",
+    "FIN1",
+    "GIR22",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "KEC7"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-segment-networks",
+   "name": "Segment Networks to Limit Access",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-segment-networks",
+     "text": "Networks MUST be segmented, to restrict access to systems that are identified as needing it",
+     "level": "MUST"
+    },
+    {
+     "id": "req-no-outside-requests",
+     "text": "Nodes MUST NOT respond to requests from outside a defined network, except those that are explicitly defined as necessary",
+     "level": "MUST NOT"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Fulfilling this requirement means maintaining a whitelist of individual services that are authorized to respond to requests from broader networks."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.22"
+    }
+   ],
+   "risks": [
+    "DOW10",
+    "GIR9",
+    "HCK6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-protect-server-locations",
+   "name": "Access to physical hardware is limited",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-protect-server-locations",
+     "text": "Entry to physical server locations MUST require authorization",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "For example, a biometric scan or the use of a keycard."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW3",
+    "DOW4",
+    "HCK6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-least-privilege",
+   "name": "Least Privilege is applied to individuals and software",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-least-privilege",
+     "text": "Software MUST NOT run with, and a user MUST NOT have a higher level of privilege than necessary",
+     "level": "MUST NOT"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "For example, check that software does not run as root, that users do not log in directly with root privileges, and software and users are granted fine-grained access based on need rather than broad-based access for simplicity."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 6.3"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.2"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.18"
+    }
+   ],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW4",
+    "DOW5",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "KEC7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-review-access-rights",
+   "name": "Regularly Review Access Rights Management",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-review-access-rights",
+     "text": "A review of Access Rights MUST take place regularly",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers both the processes and tools for granting and revoking access rights, and verifying that they are effectively managing access rights according to the relevant principles (Least Privilege, Role-based Access Control. Best practice for this review includes:"
+    },
+    {
+     "t": "b",
+     "x": "analyzing access logs for physical access to hardware, and ensuring authorized individuals are not given access to hardware"
+    },
+    {
+     "t": "b",
+     "x": "verifying access to signing keys is limited to individuals whose roles mean they need it, and that all who need that access have it"
+    },
+    {
+     "t": "b",
+     "x": "ensuring that processes are effectively followed and meet the Node Operator's business needs"
+    },
+    {
+     "t": "b",
+     "x": "verify that software is run in a way that minimises its access"
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 5.17"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 5.18"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.18"
+    }
+   ],
+   "risks": [
+    "DOW16",
+    "DOW17",
+    "DOW18",
+    "GIR1",
+    "GIR5",
+    "GIR7",
+    "SLS10",
+    "SLS11",
+    "SLS12",
+    "SLS13",
+    "SLS9"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-encrypt-data",
+   "name": "Protect Data in Transit and Storage",
+   "group": "sec-controls-access",
+   "reqs": [
+    {
+     "id": "req-encrypt-data",
+     "text": "All data in transit MUST be encrypted",
+     "level": "MUST"
+    },
+    {
+     "id": "req-direct-transmission",
+     "text": "and SHOULD use the most direct transmission available",
+     "level": "SHOULD"
+    },
+    {
+     "id": "req-store-encrypted",
+     "text": "All data \"at rest\" MUST be stored in encrypted form",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": ","
+    },
+    {
+     "t": "p",
+     "x": "This covers all services that communicate data, such as Databases, Web servers, Load balancers, Authentication systems, CI/CD pipeline tools, etc."
+    },
+    {
+     "t": "p",
+     "x": "Best practices include ensuring that the latest version of TLS is being used, with secure algorithms."
+    },
+    {
+     "t": "p",
+     "x": "Current best practice includes assessing the cost and risk associated with moving to quantum-safe cryptography, and appropriate timelines."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "CRYPTOFAIL",
+     "ref": ""
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 6.7"
+    }
+   ],
+   "risks": [
+    "DOW18",
+    "GIR10",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC6",
+    "KEC7",
+    "KEC9",
+    "SLS11",
+    "SLS12",
+    "SLS13"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-traffic",
+   "name": "Log and Analyze Network Traffic",
+   "group": "sec-controls-monitoring",
+   "reqs": [
+    {
+     "id": "req-log-traffic",
+     "text": "Node Operators MUST log network traffic, and analyze the logs for anomalous behaviour",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW1",
+    "SLS10",
+    "SLS11",
+    "SLS12",
+    "SLS13",
+    "SLS14",
+    "SLS15",
+    "SLS9"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-access",
+   "name": "Log privileged access",
+   "group": "sec-controls-monitoring",
+   "reqs": [
+    {
+     "id": "req-log-access",
+     "text": "Any operation that requires privileged access MUST be logged",
+     "level": "MUST"
+    },
+    {
+     "id": "req-log-role-assignment",
+     "text": "Any assignment of a key, or assignment of a role to or removal of a role from a particular key, MUST be logged",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This includes monitoring software that has privileged access."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.18"
+    }
+   ],
+   "risks": [
+    "FIN1"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-personnel",
+   "name": "Log personnel changes",
+   "group": "sec-controls-monitoring",
+   "reqs": [
+    {
+     "id": "req-log-personnel",
+     "text": "Every change in the status of people who have access to any function of the Node, or physical access to any hardware, MUST be logged",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "FIN1",
+    "HCK3"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-slashing",
+   "name": "Log slashing events",
+   "group": "sec-controls-monitoring",
+   "reqs": [
+    {
+     "id": "req-log-slashing",
+     "text": "Any event that results in slashing MUST be logged",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "RER1",
+    "RER3",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS20",
+    "SLS4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-performance-maintenance",
+   "name": "Monitor hardware and network performance",
+   "group": "sec-controls-monitoring",
+   "reqs": [
+    {
+     "id": "req-log-performance-maintenance",
+     "text": "Logs MUST provide a sufficiently detailed view of hardware and network performance to enable upgrade needs to be forecast, and to alert if validators are operating with excess latency",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "Tools such as Zabbix can also display a live feed of CPU and memory usage of each compute instance."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "A 1.1"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 7.2"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.16"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.21"
+    }
+   ],
+   "risks": [
+    "DOW10",
+    "DOW15",
+    "DOW3",
+    "DOW7",
+    "GIR4"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-log-environment",
+   "name": "Manage Environmental Threats",
+   "group": "sec-controls-environment",
+   "reqs": [
+    {
+     "id": "req-log-environment",
+     "text": "Node Operators SHOULD have processes in place to manage environmental threats",
+     "level": "SHOULD"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This includes monitoring for such threats and physically hardened facilities (e.g. fire- and flood-resistant server rooms), and physically decentralized infrastructure. It can also incorporate the use of DVT or related approaches to managing physical decentralization."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 7"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW5",
+    "DOW7",
+    "DOW9",
+    "SLS14",
+    "SLS15"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-use-dvt",
+   "name": "Distribute Validators physically",
+   "group": "sec-controls-environment",
+   "reqs": [
+    {
+     "id": "req-use-dvt",
+     "text": "Node Operators SHOULD implement failover validators in different physical locations",
+     "level": "SHOULD"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW1",
+    "DOW2",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "DOW7",
+    "DOW9"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-manage-equipment-lifecycle",
+   "name": "Manage Equipment Lifecycles",
+   "group": "sec-controls-environment",
+   "reqs": [
+    {
+     "id": "req-manage-equipment-lifecycle",
+     "text": "Node Operators SHOULD have processes in place to manage equipment lifecycles",
+     "level": "SHOULD"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This includes monitoring performance and performing preventive maintenance, upgrades, or replacing equipment as appropriate, as well as processes that ensure equipment is correctly retired including removing data and any hardware-based authorization."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 7"
+    }
+   ],
+   "risks": [
+    "DOW15",
+    "DOW20",
+    "DOW21",
+    "DOW3",
+    "DOW6",
+    "DOW7",
+    "DOW9",
+    "HCK4",
+    "HCK6",
+    "KEC1",
+    "KEC3",
+    "KEC6"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-secure-development",
+   "name": "Develop Software as Secure by Design",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-secure-development",
+     "text": "Code development MUST follow secure development processes to avoid introducing security risks",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This is a broad area. A few specific controls are included in this specification, but this requirement is intended to ensure a general production philosophy."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.25"
+    }
+   ],
+   "risks": [
+    "DOW10",
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW2",
+    "DOW20",
+    "GIR10",
+    "GIR11",
+    "GIR13",
+    "GIR14",
+    "GIR15",
+    "GIR6",
+    "HCK1",
+    "HCK2",
+    "HCK3",
+    "HCK4",
+    "HCK5",
+    "KEC7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-document-update-process",
+   "name": "Follow Update Procedures",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-document-update-process",
+     "text": "Node Operators MUST document procedures for updates to code",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 8.1"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.32"
+    }
+   ],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR13",
+    "GIR18",
+    "GIR19",
+    "GIR4",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-use-code-repo",
+   "name": "Use Code Repositories",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-use-code-repo",
+     "text": "Source code MUST be managed in a repository",
+     "level": "MUST"
+    },
+    {
+     "id": "req-dont-edit-prod",
+     "text": "All changes to deployed production code MUST be tested and reviewed before deployment",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers all changes to code, including when it is necessary to roll back an upgrade."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR13",
+    "GIR18",
+    "GIR19",
+    "GIR21",
+    "GIR4",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-check-vulnerabilities",
+   "name": "Check Third-party Code for Vulnerabilities before Updating",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-check-vulnerabilities",
+     "text": "Updates to third-party software MUST be checked for vulnerabilities before deployment",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers verifying that all software updates, including validator and other node clients as well as specifically written custom code or updates, have been audited to ensure they are not introducing known or new vulnerabilities."
+    },
+    {
+     "t": "p",
+     "x": "Best practice is to perform both internal and independent external audit, and to ensure the identity of the coders is known. Likewise, in best practice third-party code developers are only given access to code they need to do their work, are held to high standards of confidentiality, and work with a well-defined set of expectations."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.7"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.30"
+    },
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.32"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 8.1"
+    }
+   ],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6",
+    "HCK1",
+    "KEC7",
+    "SLS17",
+    "SLS18",
+    "SLS19",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-check-config-on-update",
+   "name": "Verify Configuration on Update",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-check-config-on-update",
+     "text": "Software update procedures MUST include an assessment and application of configuration settings",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW13",
+    "DOW2",
+    "DOW21",
+    "GIR15",
+    "GIR3",
+    "SLS7"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-verify-inputs",
+   "name": "Validate Inputs and outputs",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-verify-inputs",
+     "text": "Code MUST verify that input is safe before operating on it",
+     "level": "MUST"
+    },
+    {
+     "id": "req-valid-output",
+     "text": "Code MUST NOT produce invalid outputs",
+     "level": "MUST NOT"
+    },
+    {
+     "id": "req-protect-vs-ssrf",
+     "text": "Components SHOULD use CORS and CSP to protect against Server Side Request Forgery",
+     "level": "SHOULD"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "These requirements ensure that data passed between software components can be handled safely by the receiving component. It includes data entered manually by users."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "SSRF",
+     "ref": ""
+    },
+    {
+     "fw": "SOC2",
+     "ref": "PI 1.2"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "PI 1.3"
+    }
+   ],
+   "risks": [
+    "GIR16",
+    "HCK5"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-test-coverage",
+   "name": "Ensure Good Test Coverage",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-test-coverage",
+     "text": "Node Operators MUST have thorough test coverage of their software and operating procedures",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "There is no magic percentage figure, but ideally unit tests and integration tests cover every functionality and interaction managed by code the Node Operator uses, whether self-managed or provided by a third party."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.29"
+    }
+   ],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "req-reaudit-everything-impacted",
+   "name": "Test All Interactions Impacted by Software Updates",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-reaudit-everything-impacted",
+     "text": "Updates MUST include an audit of all code and user interactions they impact",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This means testing not just the new code deployed, but also existing code that interacts with anything the update changes, to ensure that integration is not introducing a vulnerability. This extends to non-blockchain code used to interact with the Validator, where applicable."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR13",
+    "GIR18",
+    "GIR19",
+    "GIR21",
+    "GIR4",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-deploy-via-testnet",
+   "name": "Deploy via staging test environments",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-deploy-via-testnet",
+     "text": "Updates MUST be tested on a staging environment that as closely as possible matches the proposed deployment environment before deployment as \"production\" on a live network",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.31"
+    }
+   ],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "GIR11",
+    "GIR13",
+    "GIR18",
+    "GIR19",
+    "GIR21",
+    "GIR4",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-enable-rollback",
+   "name": "Maintain Emergency Rollback Procedures",
+   "group": "sec-controls-updates",
+   "reqs": [
+    {
+     "id": "req-enable-rollback",
+     "text": "Node Operators MUST have a process to enable emergency rollback of upgrades",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "DOW11",
+    "DOW12",
+    "DOW13",
+    "DOW14",
+    "DOW19",
+    "DOW2",
+    "DOW20",
+    "DOW21",
+    "FIN3",
+    "FIN4",
+    "FIN5",
+    "FIN6",
+    "GIR13",
+    "GIR18",
+    "GIR19",
+    "GIR21",
+    "GIR4",
+    "SLS6",
+    "SLS7",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-regular-communication",
+   "name": "Provide Operational Communication",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-regular-communication",
+     "text": "Node Operators SHOULD provide regular normal operational communication",
+     "level": "SHOULD"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers general information similar to financial reporting, major changes in staffing (overall size, key positions, strategic focus), and operator-specific information such as governance of onchain systems, key third-party relationships, software partnerships, participation in standards-setting, and the like."
+    },
+    {
+     "t": "p",
+     "x": "The purpose is to provide confidence to stakeholders that the Node Operator is effectively managed, to enable them to understand the overall goals, and to show operational strengths, and plans to address perceived weaknesses and strategic threats."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "FIN6",
+    "RER5"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-incident-response-plans",
+   "name": "Document Adequate Incident Response Plans",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-incident-response-plans",
+     "text": "The Node Operator MUST have documented Incident Response Plans corresponding to all risks identified in this specification",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 7.4"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 9.1 of Trust Services Criteria"
+    }
+   ],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "req-disaster-recovery-plan",
+   "name": "Document Disaster Recovery Plans",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-disaster-recovery-plan",
+     "text": "The Node Operator MUST have documented Disaster Recovery Plans corresponding to risks identified in this specification that lead to destruction of crucial data or loss of assets",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 7.5"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW10",
+    "DOW2",
+    "DOW3",
+    "DOW4",
+    "DOW5",
+    "GIR13",
+    "GIR19",
+    "RER1",
+    "RER4",
+    "RER5"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-revise-response-plans",
+   "name": "Analyze Incidents",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-revise-response-plans",
+     "text": "Incident Response Plans and Disaster Recovery Plans MUST include revising the relevant plans whenever they are activated, based on lessons learned",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This covers both responses to real incidents and Simulated activation, or Pre-mortems."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "SOC2",
+     "ref": "CC 7.3"
+    }
+   ],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "req-run-incident-simulations",
+   "name": "Perform Regular Incident Response Simulations",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-run-incident-simulations",
+     "text": "Node Operators MUST perform a simulated Incident and activation of the associated Incident Response Plan or Disaster Recovery Plans at least twice per year",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [],
+   "all": true
+  },
+  {
+   "id": "req-communication-strategy",
+   "name": "Plan Incident Communication",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-communication-strategy",
+     "text": "Node Operators MUST document Incident Communication strategies or policies",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This requirement includes internal and external communication, both during and after incidents."
+    }
+   ],
+   "externals": [],
+   "risks": [
+    "RER5"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-verify-3rdparty-compliance",
+   "name": "Verify Counterparty Compliance",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-verify-3rdparty-compliance",
+     "text": "Node Operators MUST verify that third parties providing services, or with whom the Node Operator contracts, are in compliance with relevant standards (including this one) and regulations",
+     "level": "MUST"
+    }
+   ],
+   "body": [
+    {
+     "t": "p",
+     "x": "This includes areas such as the uptime guarantees of cloud providers and other core counterparties, response times and Service Level Agreements, security procedures, and the like as well as relevant regulatory compliance."
+    }
+   ],
+   "externals": [
+    {
+     "fw": "ISO27001",
+     "ref": "Annex A 8.30"
+    },
+    {
+     "fw": "SOC2",
+     "ref": "CC 9.2"
+    }
+   ],
+   "risks": [
+    "DOW1",
+    "DOW19",
+    "DOW7",
+    "DOW9",
+    "FIN1",
+    "GIR14",
+    "GIR22",
+    "GIR24",
+    "GIR25",
+    "GIR5",
+    "RER2",
+    "RER5",
+    "SLS9",
+    "SPS0"
+   ],
+   "all": false
+  },
+  {
+   "id": "req-termination-procedures",
+   "name": "Manage Counterparty Relationship Lifecycles",
+   "group": "sec-controls-response",
+   "reqs": [
+    {
+     "id": "req-termination-procedures",
+     "text": "Service agreements MUST specify termination procedures and obligations",
+     "level": "MUST"
+    }
+   ],
+   "body": [],
+   "externals": [],
+   "risks": [
+    "FIN1",
+    "HCK3"
+   ],
+   "all": false
+  }
+ ]
+}
